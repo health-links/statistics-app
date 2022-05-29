@@ -2,115 +2,130 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use Validator;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Passport\TokenRepository;
+use Laravel\Passport\RefreshTokenRepository;
 
 class AuthController extends Controller
 {
-
-    public function __construct()
+    public function register(Request $request)
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
-    }
-    public function login()
-    {
+        $input = $request->only(['name', 'email', 'password']);
 
-        $credentials = request(['email', 'password']);
+        $validate_data = [
+            'name' => 'required|string|min:4',
+            'email' => 'required|email',
+            'password' => 'required|min:8',
+        ];
 
-        if (!$token = auth('api')->attempt($credentials)) {
+        $validator = Validator::make($input, $validate_data);
 
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Please see errors parameter for all errors.',
-
+                'errors' => $validator->errors()
             ]);
         }
 
-        return $this->respondWithToken($token);
-    }
-    // public function login(Request $request)
-    // {
-    //     $request->validate([
-    //         'email' => 'required|string|email',
-    //         'password' => 'required|string',
-    //     ]);
-    //     $credentials = $request->only('email', 'password');
-
-    //     $token = Auth::attempt($credentials);
-    //     if (!$token) {
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Unauthorized',
-    //         ], 401);
-    //     }
-
-    //     $user = Auth::user();
-    //     return response()->json([
-    //         'status' => 'success',
-    //         'user' => $user,
-    //         'authorisation' => [
-    //             'token' => $token,
-    //             'type' => 'bearer',
-    //         ]
-    //     ]);
-    // }
-
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
-
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $input['name'],
+            'email' => $input['email'],
+            'password' => Hash::make($input['password'])
         ]);
 
-        $token = Auth::login($user);
         return response()->json([
-            'status' => 'success',
-            'message' => 'User created successfully',
-            'user' => $user,
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
-        ]);
+            'success' => true,
+            'message' => 'User registered succesfully, Use Login method to receive token.'
+        ], 200);
     }
 
+    /**
+     * Login user.
+     *
+     * @return json
+     */
+    public function login(Request $request)
+    {
+
+        $input = $request->only(['email', 'password']);
+
+        $validate_data = [
+            'email' => 'required|email',
+            'password' => 'required|min:8',
+        ];
+
+        $validator = Validator::make($input, $validate_data);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Username Or password Is Invaild.',
+            ]);
+        }
+
+        // authentication attempt
+        if (auth()->attempt($input)) {
+            $token = auth()->user()->createToken('passport_token')->accessToken;
+            return $this->respondWithToken($token, auth()->user());
+
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'User authentication failed.'
+            ], 401);
+        }
+    }
+
+    /**
+     * Access method to authenticate.
+     *
+     * @return json
+     */
+    public function userDetail()
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Data fetched successfully.',
+            'data' => auth()->user()
+        ], 200);
+    }
+
+    /**
+     * Logout user.
+     *
+     * @return json
+     */
     public function logout()
     {
-        Auth::logout();
+        $access_token = auth()->user()->token();
+
+        // logout from only current device
+        $tokenRepository = app(TokenRepository::class);
+        $tokenRepository->revokeAccessToken($access_token->id);
+
+        // use this method to logout from all devices
+        // $refreshTokenRepository = app(RefreshTokenRepository::class);
+        // $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($$access_token->id);
+
         return response()->json([
-            'status' => 'success',
-            'message' => 'Successfully logged out',
-        ]);
+            'success' => true,
+            'message' => 'User logout successfully.'
+        ], 200);
     }
 
-    public function refresh()
+    protected function respondWithToken($token,$user)
     {
-        return response()->json([
-            'status' => 'success',
-            'user' => Auth::user(),
-            'authorisation' => [
-                'token' => Auth::refresh(),
-                'type' => 'bearer',
-            ]
-        ]);
-    }
 
-    protected function respondWithToken($token)
-    {
+
         return response()->json([
 
             'success' => true,
-            'data' => auth('api')->user(),
+            'data' => $user,
             'access_token' => $token,
             'token_type' => 'bearer',
             "role" => 'admin',

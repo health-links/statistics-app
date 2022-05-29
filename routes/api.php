@@ -22,7 +22,7 @@ Route::post('login', [AuthController::class, 'login']);
 Route::get('home', [HomeController::class, 'index']);
 // put all api protected routes here
 Route::middleware('auth:api')->group(function () {
-    Route::post('user-detail', [AuthController::class, 'userDetail']);
+    Route::get('user', [AuthController::class, 'user']);
     Route::post('logout', [AuthController::class, 'logout']);
 
 });

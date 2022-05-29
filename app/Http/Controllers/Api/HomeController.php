@@ -85,7 +85,7 @@ class HomeController extends Controller
         $dount =[
             'series'=>[$negativeChunks, $positiveChunks, $neutralChunks, $mixedChunks],
             'labels'=>['negative', 'positive', 'neutral', 'mixed'],
-            'colors'=>$colors,
+            'colors' => $colors,
             'total' => $chunks->count(),
         ];
         $clients = DB::table('clients')->get();
@@ -123,6 +123,7 @@ class HomeController extends Controller
             'dount' => $dount,
             'clients' => $clients,
             'services' => $services,
+            'colors' => $colors,
             'data' => $rrrrrr
         ],200);
     }
