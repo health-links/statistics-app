@@ -20,3 +20,6 @@ use App\Http\Controllers\HomeController;
 
 // home route
 Route::get('/', [HomeController::class,'index'])->name('home');
+Route::get('/yearly', [HomeController::class, 'getDataYearly'])->name('chart.yearly');
+Route::get('/monthly', [HomeController::class, 'getDataMonthly'])->name('chart.monthly');
+Route::get('/quarterly', [HomeController::class, 'getDataQuarterly'])->name('chart.quarterly');

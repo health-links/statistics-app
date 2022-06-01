@@ -2,28 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Chunk;
 use App\Models\CommentApi;
-use App\Models\CommentCategory;
 use Illuminate\Http\Request;
+use App\Models\CommentCategory;
 use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        // get comments api data and count comments group by r_rate
-        $queryComment = CommentApi::query();
-        $queryComment->when($request->client_id !== null, function ($q) use ($request) {
-            return $q->where('sn_client', $request->client_id);
-        });
-        $queryComment->when($request->service_id !== null, function ($q) use ($request) {
-            return $q->where('sn_service', $request->service_id);
-        });
-        $queryComment->when($request->duration !== null, function ($q) use ($request) {
-            return $q->where('sn_amenddate', '<', date('Y-m-d', strtotime('-' . $request->duration . ' days')));
-        });
-
+        $queryComment = $this->filterData($request);
         $comments = $queryComment->select('r_rate', DB::raw('count(*) as count'))
             ->groupBy('r_rate')
             ->get();
@@ -52,43 +42,15 @@ class HomeController extends Controller
         $clients = DB::table('clients')->get();
         $services = DB::table('services')->get();
 
-
-
-
         // column-chart
-        // get all categories from comments_categories
-
-
-        // select r_cats from comments_api
-
-        // $data = DB::table('comments_api')
-        //         ->select('comments_categories.*', DB::raw("services.name as name"))
-        //         ->leftJoin('comments_api as comments', DB::raw("FIND_IN_SET(c_id, comments.r_cats)"), '>', DB::raw("'0'"))
-        //         ->get();
-
-
-        // $data = DB::table("comments_api")
-        //     ->whereNotNull('r_cats')
-        //     ->select("comments_api.*", DB::raw("GROUP_CONCAT(comments_categories.c_name ORDER BY comments_api.sn_id) cat_name"))
-        //     ->leftjoin("comments_categories", DB::raw('FIND_IN_SET(comments_categories.c_id, comments_api.r_cats)'), '>', DB::raw("'0'"))
-        //     ->GroupBy( 'comments_api.r_cats')
-        //     ->get();
-
-        // $location = CommentApi::whereNotNull('r_cats')->leftJoin('comments_categories', function ($join) {
-        //     $join->on("comments_categories", DB::raw('FIND_IN_SET(comments_categories.c_id, comments_api.r_cats)'), '>', DB::raw("'0'"));
-        // })
-        // ->select("comments_api.*", DB::raw("GROUP_CONCAT(comments_categories.c_name ORDER BY comments_api.sn_id) cat_name"))
-        // ->GroupBy('location.id')
-        // ->paginate(10);
-        // $data = CommentApi::join('comments_categories', DB::raw("FIND_IN_SET(c_id, comment_api.r_cats)"), '>', DB::raw("'0'"))->get();
         $data = CommentCategory::whereHas('comments', function ($query) {
             $query->whereNotNull('r_cats');
         })->get();
-        $datas = [];
+        $chunksData = [];
         $types = ['positive', 'negative', 'neutral', 'mixed'];
         foreach ($data as $key => $value) {
             foreach ($types as $type) {
-                $datas[] = [
+                $chunksData[] = [
                     'id' => $value->c_id,
                     'name' => $value->c_name,
                     'type' =>  $type,
@@ -96,40 +58,96 @@ class HomeController extends Controller
                 ];
             }
         }
-
-        $rr = collect($datas)->toArray();
-
-        $rrrrrr = [];
-        foreach($rr as $key => $value) {
-             $rrrrrr[$value['type']]['data'][] = $value['value'];
-            $rrrrrr[$value['type']]['name'][] = $value['name'];
+        $chunksChartData = [];
+        foreach (collect($chunksData)->toArray() as $key => $value) {
+            $chunksChartData[$value['type']]['data'][] = $value['value'];
+            $chunksChartData[$value['type']]['name'][] = $value['name'];
         }
 
-        // dd($rrrrrr);
+        // get comments api data and count comments group by r_rate monthly
+        $trendChartData = $this->getDataMonthly($request);
 
-        //
-        /**
-         * $data=[
-         * 'name'=>'',
-         * 'type'=>'',
-         * 'data'=>[],
-         * ]
-         */
-
-
-        // manay to many relation without pivot table
-
-
-
-        return view('home', compact('positive', 'negative', 'neutral', 'mixed', 'chunks', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'mixedChunks', 'colors', 'clients', 'services', 'rrrrrr'));
+        return view('home', compact('positive', 'negative', 'neutral', 'mixed', 'chunks', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'mixedChunks', 'colors', 'clients', 'services', 'chunksChartData', 'trendChartData'));
     }
 
-    public function getdd()
-    {
-        // join between to tables comments_categories and comments_api
 
-        $comments = CommentApi::join('comments_categories', 'comments_api.sn_comment', '=', 'comments_categories.sn_comment')
-            ->select('comments_api.*', 'comments_categories.category_id')
+
+    public function getDataYearly(Request $request)
+    {
+        // get comments api data and count comments group by r_rate yearly
+        $queryCommentYearly = $this->filterData($request);
+        $commentsYearly = $queryCommentYearly->whereBetween('sn_amenddate', [Carbon::now()->subYear(1), Carbon::now()])
+            ->select(DB::raw('YEAR(sn_amenddate) as year'), 'r_rate', DB::raw('count(*) as count'))
+            ->groupBy('year', 'r_rate')
             ->get();
+
+        $chartColor = collect($this->getColors())->toArray();
+
+
+        foreach ($commentsYearly as $key => $value) {
+            $rate = $value->r_rate;
+            $trendChartData[$rate]['color'] =  'rgb' . $chartColor[$rate];
+            $trendChartData[$rate]['data'][] = $value->count;
+            $trendChartData[$rate]['categories'][] = $value->year;
+        }
+
+        return response()->json($trendChartData);
+    }
+
+    public function getDataMonthly(Request $request)
+    {
+        $queryCommentMonthly = $this->filterData($request);
+
+        $commentsMonthly = $queryCommentMonthly->whereBetween('sn_amenddate', [Carbon::now()->subMonth(12), Carbon::now()])
+            ->select(DB::raw('YEAR(sn_amenddate) as year'), DB::raw('MONTH(sn_amenddate) as month'), 'r_rate', DB::raw('count(*) as count'))
+            ->orderBy('month', 'asc')
+            ->groupBy('year', 'month', 'r_rate')
+            ->get();
+
+        $chartColor = collect($this->getColors())->toArray();
+        $trendChartData = [];
+
+
+        foreach ($commentsMonthly as $key => $value) {
+
+            $rate = $value->r_rate;
+            $trendChartData[$rate]['color'] =  'rgb' . $chartColor[$rate];
+            $trendChartData[$rate]['data'][] = $value->count;
+            $trendChartData[$rate]['categories'][] = $value->year . '-' . date('F', mktime(0, 0, 0, $value->month, 10));
+        }
+        return $trendChartData;
+    }
+
+    public function getDataQuarterly(Request $request)
+    {
+        // get comments api data and count comments group by r_rate quarterly
+        $queryCommentQuarterly = $this->filterData($request);
+        $commentsQuarterly = $queryCommentQuarterly->whereBetween('sn_amenddate', [Carbon::now()->subMonth(3), Carbon::now()])
+            ->select(DB::raw('YEAR(sn_amenddate) as year'), DB::raw('QUARTER(sn_amenddate) as quarter'), 'r_rate', DB::raw('count(*) as count'))
+            ->orderBy('quarter', 'asc')
+            ->groupBy('year', 'quarter', 'r_rate')
+            ->get();
+
+        $chartColor = collect($this->getColors())->toArray();
+        $trendChartData = [];
+        foreach ($commentsQuarterly as $key => $value) {
+            $rate = $value->r_rate;
+            $trendChartData[$rate]['color'] =  'rgb' . $chartColor[$rate];
+            $trendChartData[$rate]['data'][] = $value->count;
+            $trendChartData[$rate]['categories'][] = $value->year . '-' . $value->quarter;
+        }
+
+        return response()->json($trendChartData);
+    }
+
+    private function getColors()
+    {
+        return json_decode(DB::table('charts_bgs')->where('bkey', 'rates')->first()->bvals);
+    }
+
+
+    private function filterData($request)
+    {
+        return CommentApi::filterData($request);
     }
 }

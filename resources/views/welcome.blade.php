@@ -13,8 +13,8 @@
     <title>Dashboard ecommerce - Vuexy - Bootstrap HTML admin template</title>
     <link rel="apple-touch-icon" href="{{ asset('admin') }}/app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('admin') }}/app-assets/images/ico/favicon.ico">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600"
-        rel="stylesheet">
+    {{--  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600"
+        rel="stylesheet">  --}}
 
 
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/vendors/css/vendors.min.css">
@@ -28,18 +28,21 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/components.min.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/themes/dark-layout.min.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/themes/bordered-layout.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/themes/semi-dark-layout.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/core/menu/menu-types/vertical-menu.min.css">
-    <link rel="stylesheet" type="text/css"  href="{{ asset('admin') }}/app-assets/css/plugins/forms/pickers/form-flat-pickr.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/core/menu/menu-types/vertical-menu.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/pages/dashboard-ecommerce.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/plugins/charts/chart-apex.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/css/plugins/extensions/ext-component-toastr.min.css">
-
-
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('admin') }}/app-assets/css/themes/semi-dark-layout.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('admin') }}/app-assets/css/core/menu/menu-types/vertical-menu.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('admin') }}/app-assets/css/plugins/forms/pickers/form-flat-pickr.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('admin') }}/app-assets/css/core/menu/menu-types/vertical-menu.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('admin') }}/app-assets/css/pages/dashboard-ecommerce.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('admin') }}/app-assets/css/plugins/charts/chart-apex.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('admin') }}/app-assets/css/plugins/extensions/ext-component-toastr.min.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/assets/css/style.css">
-
-
 </head>
 
 
@@ -699,29 +702,25 @@
     </div>
     <!-- End: Customizer-->
 
-    <!-- Buynow Button-->
-    <div class="buy-now"><a href="https://1.envato.market/vuexy_admin" target="_blank"
-            class="btn btn-danger">Buy Now</a>
 
-    </div>
     <div class="sidenav-overlay"></div>
     <div class="drag-target"></div>
 
     <!-- BEGIN: Footer-->
     <footer class="footer footer-static footer-light">
-        <p class="clearfix mb-0"><span class="float-md-start d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2021<a
-                    class="ms-25" href="https://1.envato.market/pixinvent_portfolio"
-                    target="_blank">Pixinvent</a><span class="d-none d-sm-inline-block">, All rights
+        <p class="clearfix mb-0"><span class="float-md-start d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2022<a
+                    class="ms-25" href="#"
+                    target="_blank">Health Links</a><span class="d-none d-sm-inline-block">, All rights
                     Reserved</span></span><span class="float-md-end d-none d-md-block">Hand-crafted & Made with<i
                     data-feather="heart"></i></span></p>
     </footer>
     <button class="btn btn-primary btn-icon scroll-top" type="button"><i data-feather="arrow-up"></i></button>
 
-    <script src="{{ asset('admin') }}/app-assets/vendors/js/vendors.min.js"></script>
+    <script src="{{ asset('admin') }}/app-assets/vendors/js/vendor.js"></script>
 
     <script src="{{ asset('admin') }}/app-assets/vendors/js/charts/apexcharts.min.js"></script>
     <script src="{{ asset('admin') }}/app-assets/vendors/js/extensions/toastr.min.js"></script>
-  <!-- BEGIN: Page Vendor JS-->
+    <!-- BEGIN: Page Vendor JS-->
     <script src="{{ asset('admin') }}/app-assets/vendors/js/charts/chart.min.js"></script>
     <script src="{{ asset('admin') }}/app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
     <!-- END: Page Vendor JS-->
@@ -729,9 +728,6 @@
     <script src="{{ asset('admin') }}/app-assets/js/core/app.min.js"></script>
     <script src="{{ asset('admin') }}/app-assets/js/scripts/customizer.min.js"></script>
 
-
-    <script src="{{ asset('admin') }}/app-assets/js/scripts/pages/dashboard-ecommerce.min.js"></script>
-    <script src="{{ asset('admin') }}/app-assets/js/scripts/charts/chart-apex.min.js"></script>
     <!-- END: Page JS-->
     @stack('js')
 
