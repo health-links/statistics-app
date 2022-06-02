@@ -14,7 +14,7 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $queryComment = $this->filterData($request);
+        $queryComment= $this->filterData($request);
         $comments = $queryComment->select('r_rate', DB::raw('count(*) as count'))
             ->groupBy('r_rate')
             ->get();
@@ -26,19 +26,18 @@ class HomeController extends Controller
 
         // chunks
         // get all chuncks grouped by r_rate
-        $queryChunk = Chunk::query();
-        $queryChunk->when($request->service_id !== null, function ($q) use ($request) {
-            return $q->where('ch_service', $request->service_id);
-        });
-        $chunks = $queryChunk->select('ch_rate', DB::raw('count(*) as count'))
+        $queryChunk = $this->filterData($request);
+        $ids = $queryChunk->pluck('sn_id');
+        $chunksCount = Chunk::whereIn('sn_id', $ids)->count();
+        $chunks = Chunk::whereIn('sn_id', $ids)->select('ch_rate', DB::raw('count(*) as count'))
             ->groupBy('ch_rate')
             ->get();
         // get postive chunks from $chunks
-        $negativeChunks = $chunks->where('ch_rate', '=', 'negative')->count();
-        $positiveChunks = $chunks->where('ch_rate', '=', 'positive')->count();
-        $neutralChunks = $chunks->where('ch_rate', '=', 'neutral')->count();
-        $mixedChunks = $chunks->where('ch_rate', '=', 'mixed')->count();
-        // get colors from charts_bgs
+        $negativeChunks = $chunks->where('ch_rate', '=', 'negative')->first();
+        $positiveChunks = $chunks->where('ch_rate', '=', 'positive')->first();
+        $neutralChunks = $chunks->where('ch_rate', '=', 'neutral')->first();
+        $mixedChunks = $chunks->where('ch_rate', '=', 'mixed')->first();
+
         $colors = json_decode(DB::table('charts_bgs')->where('bkey', 'rates')->first()->bvals);
         $clients = DB::table('clients')->get();
         $services = DB::table('services')->get();
@@ -71,7 +70,7 @@ class HomeController extends Controller
         $topicPositive = $this->getTopicsData($request)['topicPositive'];
         $topicNegative = $this->getTopicsData($request)['topicNegative'];
 
-        return view('home', compact('positive', 'negative', 'neutral', 'mixed', 'chunks', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'mixedChunks', 'colors', 'clients', 'services', 'chunksChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories'));
+        return view('home', compact('positive', 'negative', 'neutral', 'mixed', 'chunksCount', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'mixedChunks', 'colors', 'clients', 'services', 'chunksChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories'));
     }
 
 
@@ -108,10 +107,7 @@ class HomeController extends Controller
 
         $chartColor = collect($this->getColors())->toArray();
         $trendChartData = [];
-
-
         foreach ($commentsMonthly as $key => $value) {
-
             $rate = $value->r_rate;
             $trendChartData[$rate]['color'] =  'rgb' . $chartColor[$rate];
             $trendChartData[$rate]['data'][] = $value->count;
@@ -144,8 +140,18 @@ class HomeController extends Controller
 
     public function getTopicsData(Request $request)
     {
-        // using when with realtionship
+
         $query = CommentTopics::where('t_report', '=', 1);
+        $query->when($request->service_id !== null, function ($q) use ($request) {
+            $q->whereHas('comments', function ($q2) use ($request) {
+                $q2->where('sn_service', $request->service_id);
+            });
+        });
+        $query->when($request->client_id !== null, function ($q) use ($request) {
+            $q->whereHas('comments', function ($q2) use ($request) {
+                return $q2->where('sn_client', $request->client_id);;
+            });
+        });
         $query->when($request->category !== null && $request->category !== 'all', function($q){
              $q->whereHas('comments',function($q2){
                  $q2->whereHas('categories',function($q3){
@@ -156,6 +162,8 @@ class HomeController extends Controller
         $query->when($request->category !== null && $request->category === 'all', function ($q) {
             return $q->whereHas('comments');
         });
+
+
         $topics = $query->get();
         $topicPositive = [];
         $topicNegative = [];

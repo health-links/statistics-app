@@ -13,8 +13,8 @@
     <title>Dashboard ecommerce - Vuexy - Bootstrap HTML admin template</title>
     <link rel="apple-touch-icon" href="{{ asset('admin') }}/app-assets/images/ico/apple-icon-120.png">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('admin') }}/app-assets/images/ico/favicon.ico">
-    {{--  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600"
-        rel="stylesheet">  --}}
+    {{-- <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600"
+        rel="stylesheet"> --}}
 
 
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/app-assets/vendors/css/vendors.min.css">
@@ -42,6 +42,8 @@
         href="{{ asset('admin') }}/app-assets/css/plugins/charts/chart-apex.min.css">
     <link rel="stylesheet" type="text/css"
         href="{{ asset('admin') }}/app-assets/css/plugins/extensions/ext-component-toastr.min.css">
+         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/assets/css/style.css">
 </head>
 
@@ -572,9 +574,16 @@
                             @endforeach
                         </select>
                     </div>
+
                     <div class="mb-2">
-                        <label for="">Duration</label>
-                        <input type="number" name="duration" min="0" class="form-control">
+                        <label class="form-label" for="fp-default">Duration From Date</label>
+                        <input type="text" id="fp-default" class="form-control flatpickr flatpickr-input"
+                            placeholder="YYYY-MM-DD" readonly="readonly" name="from">
+                    </div>
+                   <div class="mb-2">
+                        <label class="form-label" for="fp-default">Duration To Date</label>
+                        <input type="text" id="fp-default" class="form-control flatpickr flatpickr-input"
+                            placeholder="YYYY-MM-DD" readonly="readonly" name="to">
                     </div>
 
                     <div>
@@ -709,26 +718,27 @@
     <!-- BEGIN: Footer-->
     <footer class="footer footer-static footer-light">
         <p class="clearfix mb-0"><span class="float-md-start d-block d-md-inline-block mt-25">COPYRIGHT &copy; 2022<a
-                    class="ms-25" href="#"
-                    target="_blank">Health Links</a><span class="d-none d-sm-inline-block">, All rights
+                    class="ms-25" href="#" target="_blank">Health Links</a><span
+                    class="d-none d-sm-inline-block">, All rights
                     Reserved</span></span><span class="float-md-end d-none d-md-block">Hand-crafted & Made with<i
                     data-feather="heart"></i></span></p>
     </footer>
     <button class="btn btn-primary btn-icon scroll-top" type="button"><i data-feather="arrow-up"></i></button>
 
-    <script src="{{ asset('admin') }}/app-assets/vendors/js/vendor.js"></script>
+    <script src="{{ asset('admin') }}/app-assets/vendors/js/vendors.min.js"></script>
+
+
+
+
 
     <script src="{{ asset('admin') }}/app-assets/vendors/js/charts/apexcharts.min.js"></script>
     <script src="{{ asset('admin') }}/app-assets/vendors/js/extensions/toastr.min.js"></script>
-    <!-- BEGIN: Page Vendor JS-->
     <script src="{{ asset('admin') }}/app-assets/vendors/js/charts/chart.min.js"></script>
-    <script src="{{ asset('admin') }}/app-assets/vendors/js/pickers/flatpickr/flatpickr.min.js"></script>
-    <!-- END: Page Vendor JS-->
     <script src="{{ asset('admin') }}/app-assets/js/core/app-menu.min.js"></script>
     <script src="{{ asset('admin') }}/app-assets/js/core/app.min.js"></script>
     <script src="{{ asset('admin') }}/app-assets/js/scripts/customizer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    <!-- END: Page JS-->
     @stack('js')
 
     <script>
@@ -740,6 +750,7 @@
                 });
             }
         })
+    $(".flatpickr").flatpickr();
     </script>
 </body>
 <!-- END: Body-->

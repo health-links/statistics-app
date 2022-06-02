@@ -7,6 +7,7 @@
             <div class="content-header row">
             </div>
             <div class="content-body">
+
                 <!-- Dashboard Ecommerce Starts -->
                 <section id="dashboard-ecommerce">
                     <div class="row match-height">

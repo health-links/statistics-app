@@ -15,9 +15,7 @@ use App\Http\Controllers\HomeController;
 |
 */
 
-// Route::get('/', function () {
-//     return view('home');
-// });
+
 
 // home route
 Route::get('/', [HomeController::class,'index'])->name('home');
@@ -27,19 +25,19 @@ Route::get('/quarterly', [HomeController::class, 'getDataQuarterly'])->name('cha
 Route::get('/topics/category', [HomeController::class, 'getTopicsData'])->name('charts.topics.category');
 
 
-// Route::get('/insert', function () {
-//     $comments = DB::table('comments_api')->pluck('sn_id')->toArray();
-//     $topics = DB::table('comments_topics')->pluck('t_id')->toArray();
-//     $types = ['positive', 'negative'];
+Route::get('/insert', function () {
+    $comments = DB::table('comments_api')->get();
+    $types = ['positive', 'negative', 'neutral', 'mixed'];
 
-//     $data=[];
-//     foreach($comments as $key=> $item){
-//         $data[]=[
-//             'comment_id' => $item,
-//             'topic_id' => $topics[array_rand($topics)],
-//             "type" => $types[rand(0,1)],
-//         ];
-//     }
-//     DB::table('comment_topic')->insert($data);
-//     return "done";
-// });
+    $data=[];
+    foreach($comments as $key=> $item){
+        $data[]=[
+            'ch_service' => $item->sn_service,
+            'sn_id' => $item->sn_id,
+            "ch_rate" => $types[rand(0,1)],
+            "ch_amenddate" => '2022-01-19'
+        ];
+    }
+    DB::table('chunks')->insert($data);
+    return "done";
+});

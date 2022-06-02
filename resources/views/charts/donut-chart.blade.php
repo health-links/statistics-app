@@ -34,11 +34,11 @@
                      position: 'bottom'
                  },
                  labels: ['negative', 'positive', 'neutral', 'mixed'],
-                 series: [{{ $negativeChunks ?? 0 }}, {{ $positiveChunks ?? 0 }},
-                     {{ $neutralChunks ?? 0 }},
-                     {{ $mixedChunks ?? 0 }}
+                 series: [{{ $negativeChunks->count ?? 0 }}, {{ $positiveChunks->count ?? 0 }},
+                     {{ $neutralChunks->count ?? 0 }},
+                     {{ $mixedChunks->count ?? 0 }}
                  ],
-                 colors: [$negativeChunks, $positiveChunks, $neutralChunks, $mixedChunks],
+                 colors: [$positiveChunks, $negativeChunks, $neutralChunks, $mixedChunks],
                  dataLabels: {
                      enabled: true,
                      formatter: function(val, opt) {
@@ -58,8 +58,9 @@
                                      fontSize: '1rem',
                                      fontFamily: 'Montserrat',
                                      formatter: function(val) {
-                                         return parseInt({{ $chunks->count() }} ? (parseInt(val) /
-                                             {{ $chunks->count() }}) * 100 : 0) + '%';
+                                         return Math.round({{ $chunksCount }} ? (Math.round(val /
+                                             {{ $chunksCount }} * 100)) : 0).toFixed(2) + '%';
+
                                      }
                                  },
                                  total: {
@@ -67,9 +68,10 @@
                                      fontSize: '1.5rem',
                                      label: 'negative',
                                      formatter: function(w) {
-                                         return parseInt(
-                                             {{ $chunks->count() > 0 ? ($negativeChunks / $chunks->count()) * 100 : 0 }}
-                                             ) + '%';
+
+                                         return Math.round(
+                                             {{ $chunksCount > 0 ? ($positiveChunks->count / $chunksCount) * 100 : 0 }}
+                                         ).toFixed(2) + '%';
                                      }
                                  }
                              }

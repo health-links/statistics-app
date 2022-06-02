@@ -40,6 +40,12 @@ class CommentApi extends Model
         return $this->topics()->wherePivot('type', 'mixed')->count();
     }
 
+    // chuncks
+    public function chunks()
+    {
+        return $this->hasMany(Chunk::class, 'sn_id', 'sn_id');
+    }
+
 
 
 
@@ -53,14 +59,11 @@ class CommentApi extends Model
         $query->when($request->client_id !== null, function ($q) use ($request) {
             return $q->where('sn_client', $request->client_id);
         });
-        $query->when( $request->duration !== null,function ($q) use ($request) {
-            return $q->where('sn_amenddate', '<', date('Y-m-d', strtotime('-' . $request->duration . ' days')));
-        });
         $query->when($request->from !== null, function ($q) use ($request) {
-            return $q->where('sn_date', '>=', $request->from);
+            return $q->where('sn_amenddate', '>=', $request->from);
         });
         $query->when($request->to !== null, function ($q) use ($request) {
-            return $q->where('sn_date', '<=', $request->to);
+            return $q->where('sn_amenddate', '<=', $request->to);
         });
         return $query;
     }
