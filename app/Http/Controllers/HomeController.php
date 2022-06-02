@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
+
     public function index(Request $request)
     {
-        $queryComment= $this->filterData($request);
+        $queryComment = $this->filterData($request);
         $comments = $queryComment->select('r_rate', DB::raw('count(*) as count'))
             ->groupBy('r_rate')
             ->get();
@@ -23,21 +24,31 @@ class HomeController extends Controller
         $positive = $comments->where('r_rate', '=', 'positive')->first();
         $neutral = $comments->where('r_rate', '=', 'neutral')->first();
         $mixed = $comments->where('r_rate', '=', 'mixed')->first();
-
+ // $start = microtime(true);
+        // Chunk::select('ch_rate', DB::raw('count(*) as count'))->whereIn('sn_id', $ids)->groupBy('ch_rate')->get();
+        // // DB::table('chunks')->selectRaw('count(*) as count')->whereIn('sn_id', $ids)->groupBy('ch_rate')->get();
+        // $time = microtime(true) - $start;
+        // dd($time);
         // chunks
+
         // get all chuncks grouped by r_rate
-        $queryChunk = $this->filterData($request);
-        $ids = $queryChunk->pluck('sn_id');
-        $chunksCount = Chunk::whereIn('sn_id', $ids)->count();
-        $chunks = Chunk::whereIn('sn_id', $ids)->select('ch_rate', DB::raw('count(*) as count'))
-            ->groupBy('ch_rate')
-            ->get();
+        $queryChunk = $this->filterData($request)->with('chunksData')->get();
+        $chunks = $queryChunk->map(function ($comment) {
+            return $comment->chunksData;
+        })->flatten(1);
 
-        $negativeChunks = $chunks->where('ch_rate', '=', 'negative')->first();
-        $positiveChunks = $chunks->where('ch_rate', '=', 'positive')->first();
-        $neutralChunks = $chunks->where('ch_rate', '=', 'neutral')->first();
-        $mixedChunks = $chunks->where('ch_rate', '=', 'mixed')->first();
 
+
+        $negativeChunks = $chunks->where('ch_rate', '=', 'negative')->count();
+        $positiveChunks = $chunks->where('ch_rate', '=', 'positive')->count();
+        $neutralChunks = $chunks->where('ch_rate', '=', 'neutral')->count();
+        $mixedChunks = $chunks->where('ch_rate', '=', 'mixed')->count();
+
+
+        $chunksCount = ($negativeChunks !== null ? $negativeChunks : 0) +
+            ($positiveChunks !== null ? $positiveChunks : 0) + ($neutralChunks  !== null ? $neutralChunks : 0) + ($mixedChunks  !== null ? $mixedChunks : 0);
+
+        //9234 + 9169
         $colors = json_decode(DB::table('charts_bgs')->where('bkey', 'rates')->first()->bvals);
         $clients = DB::table('clients')->get();
         $services = DB::table('services')->get();
@@ -65,10 +76,11 @@ class HomeController extends Controller
         // get comments api data and count comments group by r_rate monthly
         $trendChartData = $this->getDataMonthly($request);
 
-       // Topics Data
-        $topics = $this->getTopicsData($request)['topics'];
-        $topicPositive = $this->getTopicsData($request)['topicPositive'];
-        $topicNegative = $this->getTopicsData($request)['topicNegative'];
+        // Topics Data
+        $topicsData = $this->getTopicsData($request);
+        $topics = $topicsData['topics'];
+        $topicPositive = $topicsData['topicPositive'];
+        $topicNegative = $topicsData['topicNegative'];
 
         return view('home', compact('positive', 'negative', 'neutral', 'mixed', 'chunksCount', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'mixedChunks', 'colors', 'clients', 'services', 'chunksChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories'));
     }
@@ -140,28 +152,29 @@ class HomeController extends Controller
 
     public function getTopicsData(Request $request)
     {
-        $topics= CommentTopics::filterData($request)->get();
+        $allTopics = CommentTopics::filterData($request);
+        $topics = $allTopics->get();
+        $ids = $allTopics->pluck('t_id')->toArray();
+        $dataPivot = DB::table('comment_topic')->whereIn('topic_id', $ids)->select('topic_id' ,'type')->get();
         $topicPositive = [];
         $topicNegative = [];
         foreach ($topics as $key => $value) {
-            array_push($topicPositive, $value->getPositiveTopics());
-            array_push($topicNegative, -$value->getNegativeTopics());
-
+            array_push($topicPositive,$dataPivot->where('topic_id', $value->t_id)->where('type', 'positive')->count() );
+            array_push($topicNegative, - $dataPivot->where('topic_id', $value->t_id)->where('type', 'negative')->count());
         }
+
         return [
-            'topics'=> $topics,
-            'topicPositive'=> $topicPositive,
-            'topicNegative'=> $topicNegative
+            'topics' => $topics,
+            'topicPositive' => $topicPositive,
+            'topicNegative' => $topicNegative
         ];
     }
 
     private function getColors()
     {
         $data = json_decode(DB::table('charts_bgs')->where('bkey', 'rates')->first()->bvals);
-        return $data;
+        return  $data;
     }
-
-
     private function filterData($request)
     {
         return CommentApi::filterData($request);

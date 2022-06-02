@@ -34,9 +34,9 @@
                      position: 'bottom'
                  },
                  labels: ['negative', 'positive', 'neutral', 'mixed'],
-                 series: [{{ $negativeChunks->count ?? 0 }}, {{ $positiveChunks->count ?? 0 }},
-                     {{ $neutralChunks->count ?? 0 }},
-                     {{ $mixedChunks->count ?? 0 }}
+                 series: [{{ $negativeChunks ?? 0 }}, {{ $positiveChunks ?? 0 }},
+                     {{ $neutralChunks ?? 0 }},
+                     {{ $mixedChunks ?? 0 }}
                  ],
                  colors: [$positiveChunks, $negativeChunks, $neutralChunks, $mixedChunks],
                  dataLabels: {
@@ -70,7 +70,7 @@
                                      formatter: function(w) {
 
                                          return Math.round(
-                                             {{ $chunksCount > 0 ? ($positiveChunks->count / $chunksCount) * 100 : 0 }}
+                                             {{ $chunksCount > 0 ? ($positiveChunks / $chunksCount) * 100 : 0 }}
                                          ).toFixed(2) + '%';
                                      }
                                  }

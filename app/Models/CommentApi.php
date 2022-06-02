@@ -41,14 +41,10 @@ class CommentApi extends Model
     }
 
     // chuncks
-    public function chunks()
+    public function chunksData()
     {
         return $this->hasMany(Chunk::class, 'sn_id', 'sn_id');
     }
-
-
-
-
 
     // scope for filter data
     public function scopeFilterData($query, $request)
