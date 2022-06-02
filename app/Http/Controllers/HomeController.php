@@ -24,32 +24,22 @@ class HomeController extends Controller
         $positive = $comments->where('r_rate', '=', 'positive')->first();
         $neutral = $comments->where('r_rate', '=', 'neutral')->first();
         $mixed = $comments->where('r_rate', '=', 'mixed')->first();
- // $start = microtime(true);
-        // Chunk::select('ch_rate', DB::raw('count(*) as count'))->whereIn('sn_id', $ids)->groupBy('ch_rate')->get();
-        // // DB::table('chunks')->selectRaw('count(*) as count')->whereIn('sn_id', $ids)->groupBy('ch_rate')->get();
-        // $time = microtime(true) - $start;
-        // dd($time);
-        // chunks
-
         // get all chuncks grouped by r_rate
-        $queryChunk = $this->filterData($request)->with('chunksData')->get();
-        $chunks = $queryChunk->map(function ($comment) {
+        $queryChunk = $this->filterData($request)->with('chunksData');
+
+        // use realship to get chunks from queryChunk
+        // using chunks() method will get all chunks from all comments
+        $chunks = $queryChunk->get()->map(function ($comment) {
             return $comment->chunksData;
         })->flatten(1);
-
-
 
         $negativeChunks = $chunks->where('ch_rate', '=', 'negative')->count();
         $positiveChunks = $chunks->where('ch_rate', '=', 'positive')->count();
         $neutralChunks = $chunks->where('ch_rate', '=', 'neutral')->count();
         $mixedChunks = $chunks->where('ch_rate', '=', 'mixed')->count();
+        $chunksCount = $chunks->count();
 
-
-        $chunksCount = ($negativeChunks !== null ? $negativeChunks : 0) +
-            ($positiveChunks !== null ? $positiveChunks : 0) + ($neutralChunks  !== null ? $neutralChunks : 0) + ($mixedChunks  !== null ? $mixedChunks : 0);
-
-        //9234 + 9169
-        $colors = json_decode(DB::table('charts_bgs')->where('bkey', 'rates')->first()->bvals);
+        $colors = $this->getColors();
         $clients = DB::table('clients')->get();
         $services = DB::table('services')->get();
 
@@ -72,6 +62,7 @@ class HomeController extends Controller
             $chunksChartData[$value['type']]['data'][] = $value['value'];
             $chunksChartData[$value['type']]['name'][] = $value['name'];
         }
+
 
         // get comments api data and count comments group by r_rate monthly
         $trendChartData = $this->getDataMonthly($request);
@@ -103,14 +94,12 @@ class HomeController extends Controller
             $trendChartData[$rate]['data'][] = $value->count;
             $trendChartData[$rate]['categories'][] = $value->year;
         }
-
         return response()->json($trendChartData);
     }
 
     public function getDataMonthly(Request $request)
     {
         $queryCommentMonthly = $this->filterData($request);
-
         $commentsMonthly = $queryCommentMonthly->whereBetween('sn_amenddate', [Carbon::now()->subMonth(12), Carbon::now()])
             ->select(DB::raw('YEAR(sn_amenddate) as year'), DB::raw('MONTH(sn_amenddate) as month'), 'r_rate', DB::raw('count(*) as count'))
             ->orderBy('month', 'asc')
@@ -146,7 +135,6 @@ class HomeController extends Controller
             $trendChartData[$rate]['data'][] = $value->count;
             $trendChartData[$rate]['categories'][] = $value->year . '-' . $value->quarter;
         }
-
         return response()->json($trendChartData);
     }
 
@@ -162,7 +150,6 @@ class HomeController extends Controller
             array_push($topicPositive,$dataPivot->where('topic_id', $value->t_id)->where('type', 'positive')->count() );
             array_push($topicNegative, - $dataPivot->where('topic_id', $value->t_id)->where('type', 'negative')->count());
         }
-
         return [
             'topics' => $topics,
             'topicPositive' => $topicPositive,

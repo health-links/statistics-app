@@ -15,6 +15,11 @@
 </div>
 @push('js')
     <script>
+        var colors = @json($colors);
+         var $negativeChunks = `rgb${colors.negative}`;
+         var $positiveChunks = `rgb${colors.positive}`;
+         var $neutralChunks = `rgb${colors.neutral}`;
+         var $mixedChunks = `rgb${colors.mixed}`;
         var flatPicker = $('.flat-picker'),
             isRtl = $('html').attr('data-textdirection') === 'rtl',
             chartColors = {
@@ -76,7 +81,7 @@
                     position: 'top',
                     horizontalAlign: 'start'
                 },
-                colors: [chartColors.column.series1, chartColors.column.series2],
+                colors: [$positiveChunks, $negativeChunks, $neutralChunks, $mixedChunks],
                 stroke: {
                     show: true,
                     colors: ['transparent']
@@ -100,11 +105,9 @@
                 ],
                 xaxis: {
                     categories: [
-
-                        @foreach ($chunksChartData['positive']['name'] as $key => $value)
+                        @foreach (!empty($chunksChartData) ? $chunksChartData['positive']['name'] : [] as $key => $value)
                             "{{ $value }}",
                         @endforeach
-
                     ]
                 },
                 fill: {
