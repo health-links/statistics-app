@@ -42,7 +42,7 @@
         href="{{ asset('admin') }}/app-assets/css/plugins/charts/chart-apex.min.css">
     <link rel="stylesheet" type="text/css"
         href="{{ asset('admin') }}/app-assets/css/plugins/extensions/ext-component-toastr.min.css">
-         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/assets/css/style.css">
 </head>
@@ -528,6 +528,38 @@
 
                     </ul>
                 </li>
+                <li class=" nav-item"><a class="d-flex align-items-center" href="#"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-mail">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                            </path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg><span class="menu-title text-truncate" data-i18n="Email">Questions</span></a>
+                </li>
+                <li class=" nav-item"><a class="d-flex align-items-center" href="#"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-message-square">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg><span class="menu-title text-truncate" data-i18n="Chat">Clients</span></a>
+                </li>
+                <li class=" nav-item"><a class="d-flex align-items-center" href="#"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-mail">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                            </path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg><span class="menu-title text-truncate" data-i18n="Email">Services</span></a>
+                </li>
+                <li class=" nav-item"><a class="d-flex align-items-center" href="#"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-message-square">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg><span class="menu-title text-truncate" data-i18n="Chat">Randomizer</span></a>
+                </li>
             </ul>
         </div>
     </div>
@@ -580,7 +612,7 @@
                         <input type="text" id="fp-default" class="form-control flatpickr flatpickr-input"
                             placeholder="YYYY-MM-DD" readonly="readonly" name="from">
                     </div>
-                   <div class="mb-2">
+                    <div class="mb-2">
                         <label class="form-label" for="fp-default">Duration To Date</label>
                         <input type="text" id="fp-default" class="form-control flatpickr flatpickr-input"
                             placeholder="YYYY-MM-DD" readonly="readonly" name="to">
@@ -750,7 +782,7 @@
                 });
             }
         })
-    $(".flatpickr").flatpickr();
+        $(".flatpickr").flatpickr();
     </script>
 </body>
 <!-- END: Body-->
