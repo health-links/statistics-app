@@ -40,23 +40,23 @@ class CommentCategory extends Model
     {
         $query->where('c_report', '=', '1');
         $query->when($request->service_id !== null, function ($q) {
-            $q->whereHas('comments', function ($q2) {
-                return $q2->where('sn_service', '=', request()->service_id);
+            $q->whereHas('comments', function ($q) {
+                return $q->where('sn_service', '=', request()->service_id);
             });
         });
         $query->when($request->client_id !== null, function ($q) {
-            $q->whereHas('comments', function ($q2) {
-                return $q2->where('sn_client', '=', request()->client_id);
+            $q->whereHas('comments', function ($q) {
+                return $q->where('sn_client', '=', request()->client_id);
             });
         });
         $query->when($request->from !== null, function ($q) {
-            $q->whereHas('comments', function ($q2) {
-                return $q2->where('sn_amenddate', '>=', request()->from);
+            $q->whereHas('comments', function ($q) {
+                return $q->where('sn_amenddate', '>=', request()->from);
             });
         });
         $query->when($request->to !== null, function ($q) {
-            $q->whereHas('comments', function ($q2) {
-                return $q2->where('sn_amenddate', '<=', request()->to);
+            $q->whereHas('comments', function ($q) {
+                return $q->where('sn_amenddate', '<=', request()->to);
             });
         });
 
