@@ -5,7 +5,7 @@
 
                 <div class="col-12">
                     <div>
-                        <h2>Chunks Pie Chart</h2>
+                        <h2>Categories</h2>
                     </div>
                     <div id="chunks-chart"></div>
                 </div>

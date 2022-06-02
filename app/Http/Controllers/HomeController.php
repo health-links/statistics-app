@@ -7,6 +7,7 @@ use App\Models\Chunk;
 use App\Models\CommentApi;
 use Illuminate\Http\Request;
 use App\Models\CommentCategory;
+use App\Models\CommentTopics;
 use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
@@ -43,12 +44,10 @@ class HomeController extends Controller
         $services = DB::table('services')->get();
 
         // column-chart
-        $data = CommentCategory::whereHas('comments', function ($query) {
-            $query->whereNotNull('r_cats');
-        })->get();
+        $categories = CommentCategory::whereHas('comments')->where('c_report','=',1)->get();
         $chunksData = [];
         $types = ['positive', 'negative', 'neutral', 'mixed'];
-        foreach ($data as $key => $value) {
+        foreach ($categories as $key => $value) {
             foreach ($types as $type) {
                 $chunksData[] = [
                     'id' => $value->c_id,
@@ -67,7 +66,12 @@ class HomeController extends Controller
         // get comments api data and count comments group by r_rate monthly
         $trendChartData = $this->getDataMonthly($request);
 
-        return view('home', compact('positive', 'negative', 'neutral', 'mixed', 'chunks', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'mixedChunks', 'colors', 'clients', 'services', 'chunksChartData', 'trendChartData'));
+       // Topics Data
+        $topics = $this->getTopicsData($request)['topics'];
+        $topicPositive = $this->getTopicsData($request)['topicPositive'];
+        $topicNegative = $this->getTopicsData($request)['topicNegative'];
+
+        return view('home', compact('positive', 'negative', 'neutral', 'mixed', 'chunks', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'mixedChunks', 'colors', 'clients', 'services', 'chunksChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories'));
     }
 
 
@@ -82,8 +86,6 @@ class HomeController extends Controller
             ->get();
 
         $chartColor = collect($this->getColors())->toArray();
-
-
         foreach ($commentsYearly as $key => $value) {
             $rate = $value->r_rate;
             $trendChartData[$rate]['color'] =  'rgb' . $chartColor[$rate];
@@ -140,9 +142,39 @@ class HomeController extends Controller
         return response()->json($trendChartData);
     }
 
+    public function getTopicsData(Request $request)
+    {
+        // using when with realtionship
+        $query = CommentTopics::where('t_report', '=', 1);
+        $query->when($request->category !== null && $request->category !== 'all', function($q){
+             $q->whereHas('comments',function($q2){
+                 $q2->whereHas('categories',function($q3){
+                    return $q3->where('c_id',request()->category)->where('c_report','=',1);
+                });
+            });
+        });
+        $query->when($request->category !== null && $request->category === 'all', function ($q) {
+            return $q->whereHas('comments');
+        });
+        $topics = $query->get();
+        $topicPositive = [];
+        $topicNegative = [];
+        foreach ($topics as $key => $value) {
+            array_push($topicPositive, $value->getPositiveTopics());
+            array_push($topicNegative, -$value->getNegativeTopics());
+
+        }
+        return [
+            'topics'=> $topics,
+            'topicPositive'=> $topicPositive,
+            'topicNegative'=> $topicNegative
+        ];
+    }
+
     private function getColors()
     {
-        return json_decode(DB::table('charts_bgs')->where('bkey', 'rates')->first()->bvals);
+        $data = json_decode(DB::table('charts_bgs')->where('bkey', 'rates')->first()->bvals);
+        return $data;
     }
 
 

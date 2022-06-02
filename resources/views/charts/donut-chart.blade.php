@@ -58,7 +58,8 @@
                                      fontSize: '1rem',
                                      fontFamily: 'Montserrat',
                                      formatter: function(val) {
-                                         return parseInt((parseInt(val) / {{ $chunks->count() }}) * 100) + '%';
+                                         return parseInt({{ $chunks->count() }} ? (parseInt(val) /
+                                             {{ $chunks->count() }}) * 100 : 0) + '%';
                                      }
                                  },
                                  total: {
@@ -66,7 +67,9 @@
                                      fontSize: '1.5rem',
                                      label: 'negative',
                                      formatter: function(w) {
-                                         return parseInt({{ ($chunks->count()) > 0 ? ($negativeChunks / $chunks->count()) * 100 : 0 }}) + '%';
+                                         return parseInt(
+                                             {{ $chunks->count() > 0 ? ($negativeChunks / $chunks->count()) * 100 : 0 }}
+                                             ) + '%';
                                      }
                                  }
                              }

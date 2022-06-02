@@ -5,7 +5,7 @@
 
                 <div class="col-12">
                     <div>
-                        <h2>Categories</h2>
+                        <h2>Heatmap</h2>
                     </div>
                     <div id="heatmap-chart"></div>
                 </div>

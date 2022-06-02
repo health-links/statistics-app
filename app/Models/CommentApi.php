@@ -17,6 +17,33 @@ class CommentApi extends Model
         return $this->belongsToMany(CommentCategory::class, 'comment_category', 'comment_id', 'category_id');
     }
 
+    public function topics()
+    {
+        return $this->belongsToMany(CommentTopics::class, 'comment_topic', 'comment_id', 'topic_id')->withPivot('type');
+    }
+
+    public function getNegativeTopics()
+    {
+        return $this->topics()->wherePivot('type', 'negative')->count();
+    }
+    public function getPositiveTopics()
+    {
+        return $this->topics()->wherePivot('type', 'positive')->count();
+    }
+    public function getNeutralTopics()
+    {
+        return $this->topics()->wherePivot('type', 'neutral')->count();
+    }
+
+    public function getMixedTopics()
+    {
+        return $this->topics()->wherePivot('type', 'mixed')->count();
+    }
+
+
+
+
+
     // scope for filter data
     public function scopeFilterData($query, $request)
     {

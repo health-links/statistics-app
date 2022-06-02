@@ -53,7 +53,7 @@
                             <div class="row match-height">
 
                                 <!-- Earnings Card -->
-                                @include('charts.chunks')
+                                @include('charts.categories')
                                 <!--/ Earnings Card -->
                             </div>
                         </div>
