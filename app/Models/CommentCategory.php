@@ -36,5 +36,32 @@ class CommentCategory extends Model
         return $this->comments()->where('r_rate', '=', 'mixed')->count();
     }
 
+    public function scopeFilterData($query, $request)
+    {
+        $query->where('c_report', '=', '1');
+        $query->when($request->service_id !== null, function ($q) {
+            $q->whereHas('comments', function ($q2) {
+                return $q2->where('sn_service', '=', request()->service_id);
+            });
+        });
+        $query->when($request->client_id !== null, function ($q) {
+            $q->whereHas('comments', function ($q2) {
+                return $q2->where('sn_client', '=', request()->client_id);
+            });
+        });
+        $query->when($request->from !== null, function ($q) {
+            $q->whereHas('comments', function ($q2) {
+                return $q2->where('sn_amenddate', '>=', request()->from);
+            });
+        });
+        $query->when($request->to !== null, function ($q) {
+            $q->whereHas('comments', function ($q2) {
+                return $q2->where('sn_amenddate', '<=', request()->to);
+            });
+        });
+
+        return $query;
+    }
+
 
 }

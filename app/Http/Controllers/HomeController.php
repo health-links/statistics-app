@@ -32,7 +32,7 @@ class HomeController extends Controller
         $chunks = Chunk::whereIn('sn_id', $ids)->select('ch_rate', DB::raw('count(*) as count'))
             ->groupBy('ch_rate')
             ->get();
-        // get postive chunks from $chunks
+
         $negativeChunks = $chunks->where('ch_rate', '=', 'negative')->first();
         $positiveChunks = $chunks->where('ch_rate', '=', 'positive')->first();
         $neutralChunks = $chunks->where('ch_rate', '=', 'neutral')->first();
@@ -43,7 +43,7 @@ class HomeController extends Controller
         $services = DB::table('services')->get();
 
         // column-chart
-        $categories = CommentCategory::whereHas('comments')->where('c_report','=',1)->get();
+        $categories = CommentCategory::filterData($request)->get();
         $chunksData = [];
         $types = ['positive', 'negative', 'neutral', 'mixed'];
         foreach ($categories as $key => $value) {
@@ -140,31 +140,7 @@ class HomeController extends Controller
 
     public function getTopicsData(Request $request)
     {
-
-        $query = CommentTopics::where('t_report', '=', 1);
-        $query->when($request->service_id !== null, function ($q) use ($request) {
-            $q->whereHas('comments', function ($q2) use ($request) {
-                $q2->where('sn_service', $request->service_id);
-            });
-        });
-        $query->when($request->client_id !== null, function ($q) use ($request) {
-            $q->whereHas('comments', function ($q2) use ($request) {
-                return $q2->where('sn_client', $request->client_id);;
-            });
-        });
-        $query->when($request->category !== null && $request->category !== 'all', function($q){
-             $q->whereHas('comments',function($q2){
-                 $q2->whereHas('categories',function($q3){
-                    return $q3->where('c_id',request()->category)->where('c_report','=',1);
-                });
-            });
-        });
-        $query->when($request->category !== null && $request->category === 'all', function ($q) {
-            return $q->whereHas('comments');
-        });
-
-
-        $topics = $query->get();
+        $topics= CommentTopics::filterData($request)->get();
         $topicPositive = [];
         $topicNegative = [];
         foreach ($topics as $key => $value) {
