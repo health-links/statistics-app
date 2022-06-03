@@ -15,6 +15,7 @@
  </div>
  @push('js')
      <script>
+
          var colors = @json($colors);
          var $negativeChunks = `rgb${colors.negative}`;
          var $positiveChunks = `rgb${colors.positive}`;

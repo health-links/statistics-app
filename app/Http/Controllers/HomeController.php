@@ -15,36 +15,30 @@ class HomeController extends Controller
 
     public function index(Request $request)
     {
-        $queryComment = $this->filterData($request);
-        $comments = $queryComment->select('r_rate', DB::raw('count(*) as count'))
-            ->groupBy('r_rate')
-            ->get();
-        // get postive comments from $comments
-        $negative = $comments->where('r_rate', '=', 'negative')->first();
-        $positive = $comments->where('r_rate', '=', 'positive')->first();
-        $neutral = $comments->where('r_rate', '=', 'neutral')->first();
-        $mixed = $comments->where('r_rate', '=', 'mixed')->first();
-        // get all chuncks grouped by r_rate
-        $queryChunk = $this->filterData($request)->with('chunksData');
+        // overall statistics
+        $overAllComments = $this->filterData($request)
+                                        ->selectRaw("count(CASE when r_rate = 'positive' THEN 1 END) AS positive")
+                                        ->selectRaw("count(CASE when r_rate = 'negative' THEN 1 END) AS negative")
+                                        ->selectRaw("count(CASE when r_rate = 'neutral' THEN 1 END) AS neutral")
+                                        ->selectRaw("count(CASE when r_rate = 'mixed' THEN 1 END) AS mixed")
+                                        ->first();
+        // chuncks  statistics
+        $queryChunk = $this->filterData($request)->join('chunks', 'chunks.sn_id', '=', 'comments_api.sn_id')
+                                        ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'positive' THEN 1 END) AS positive")
+                                        ->selectRaw("count(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'negative' THEN 1 END) AS negative")
+                                        ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'neutral' THEN 1 END) AS neutral")
+                                        ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'mixed' THEN 1 END) AS mixed")
+                                        ->first();
 
-        // use realship to get chunks from queryChunk
-        // using chunks() method will get all chunks from all comments
-        $chunks = $queryChunk->get()->map(function ($comment) {
-            return $comment->chunksData;
-        })->flatten(1);
+        $negativeChunks = $queryChunk->negative;
+        $positiveChunks = $queryChunk->positive;
+        $neutralChunks = $queryChunk->neutral;
+        $mixedChunks = $queryChunk->mixed;
+        $chunksCount = $negativeChunks + $positiveChunks + $neutralChunks+ $mixedChunks;
 
-        $negativeChunks = $chunks->where('ch_rate', '=', 'negative')->count();
-        $positiveChunks = $chunks->where('ch_rate', '=', 'positive')->count();
-        $neutralChunks = $chunks->where('ch_rate', '=', 'neutral')->count();
-        $mixedChunks = $chunks->where('ch_rate', '=', 'mixed')->count();
-        $chunksCount = $chunks->count();
-
-        $colors = $this->getColors();
-        $clients = DB::table('clients')->get();
-        $services = DB::table('services')->get();
 
         // column-chart
-        $categories = CommentCategory::filterData($request)->get();
+        $categories = CommentCategory::filterData($request)->select('c_id', 'c_name')->get();
         $chunksData = [];
         $types = ['positive', 'negative', 'neutral', 'mixed'];
         foreach ($categories as $key => $value) {
@@ -73,7 +67,12 @@ class HomeController extends Controller
         $topicPositive = $topicsData['topicPositive'];
         $topicNegative = $topicsData['topicNegative'];
 
-        return view('home', compact('positive', 'negative', 'neutral', 'mixed', 'chunksCount', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'mixedChunks', 'colors', 'clients', 'services', 'chunksChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories'));
+
+        $colors = $this->getColors();
+        $clients = DB::table('clients')->select('c_id', 'c_acronym')->get();
+        $services = DB::table('services')->select('s_id', 's_name')->get();
+
+        return view('home', compact('overAllComments', 'chunksCount', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'mixedChunks', 'colors', 'clients', 'services', 'chunksChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories'));
     }
 
 
@@ -81,8 +80,7 @@ class HomeController extends Controller
     public function getDataYearly(Request $request)
     {
         // get comments api data and count comments group by r_rate yearly
-        $queryCommentYearly = $this->filterData($request);
-        $commentsYearly = $queryCommentYearly->whereBetween('sn_amenddate', [Carbon::now()->subYear(1), Carbon::now()])
+        $commentsYearly = $this->filterData($request)->whereBetween('sn_amenddate', [Carbon::now()->subYear(1), Carbon::now()])
             ->select(DB::raw('YEAR(sn_amenddate) as year'), 'r_rate', DB::raw('count(*) as count'))
             ->groupBy('year', 'r_rate')
             ->get();
@@ -99,8 +97,8 @@ class HomeController extends Controller
 
     public function getDataMonthly(Request $request)
     {
-        $queryCommentMonthly = $this->filterData($request);
-        $commentsMonthly = $queryCommentMonthly->whereBetween('sn_amenddate', [Carbon::now()->subMonth(12), Carbon::now()])
+
+        $commentsMonthly = $this->filterData($request)->whereBetween('sn_amenddate', [Carbon::now()->subMonth(12), Carbon::now()])
             ->select(DB::raw('YEAR(sn_amenddate) as year'), DB::raw('MONTH(sn_amenddate) as month'), 'r_rate', DB::raw('count(*) as count'))
             ->orderBy('month', 'asc')
             ->groupBy('year', 'month', 'r_rate')
@@ -120,8 +118,7 @@ class HomeController extends Controller
     public function getDataQuarterly(Request $request)
     {
         // get comments api data and count comments group by r_rate quarterly
-        $queryCommentQuarterly = $this->filterData($request);
-        $commentsQuarterly = $queryCommentQuarterly->whereBetween('sn_amenddate', [Carbon::now()->subMonth(3), Carbon::now()])
+        $commentsQuarterly = $this->filterData($request)->whereBetween('sn_amenddate', [Carbon::now()->subMonth(3), Carbon::now()])
             ->select(DB::raw('YEAR(sn_amenddate) as year'), DB::raw('QUARTER(sn_amenddate) as quarter'), 'r_rate', DB::raw('count(*) as count'))
             ->orderBy('quarter', 'asc')
             ->groupBy('year', 'quarter', 'r_rate')
@@ -141,14 +138,14 @@ class HomeController extends Controller
     public function getTopicsData(Request $request)
     {
         $allTopics = CommentTopics::filterData($request);
-        $topics = $allTopics->get();
+        $topics = $allTopics->select('t_id', 't_name')->get();
         $ids = $allTopics->pluck('t_id')->toArray();
-        $dataPivot = DB::table('comment_topic')->whereIn('topic_id', $ids)->select('topic_id' ,'type')->get();
+        $dataPivot = DB::table('comment_topic')->whereIn('topic_id', $ids)->select('topic_id', 'type')->get();
         $topicPositive = [];
         $topicNegative = [];
         foreach ($topics as $key => $value) {
-            array_push($topicPositive,$dataPivot->where('topic_id', $value->t_id)->where('type', 'positive')->count() );
-            array_push($topicNegative, - $dataPivot->where('topic_id', $value->t_id)->where('type', 'negative')->count());
+            array_push($topicPositive, $dataPivot->where('topic_id', $value->t_id)->where('type', 'positive')->count());
+            array_push($topicNegative, -$dataPivot->where('topic_id', $value->t_id)->where('type', 'negative')->count());
         }
         return [
             'topics' => $topics,
