@@ -1,4 +1,5 @@
 @extends('./welcome')
+
 @section('content')
     <div class="app-content content ">
         <div class="content-overlay"></div>
@@ -27,56 +28,50 @@
                         </div>
                         <!--/ Statistics Card -->
                     </div>
-                    <div class="row match-height">
+                    <div class="row match-height parent">
                         <div class="col-lg-6 col-12">
-                            <div class="row match-height">
 
-                                <!-- Earnings Card -->
-                                @include('charts.donut-chart')
-                                <!--/ Earnings Card -->
-                            </div>
+
+                            <!-- Earnings Card -->
+                            @include('charts.donut-chart')
+                            <!--/ Earnings Card -->
+
                         </div>
-
-                    </div>
-                    <div class="row match-height">
                         <div class="col-lg-6 col-12">
-                            <div class="row match-height">
+                            <!-- Earnings Card -->
+                            @include('charts.trend')
+                            <!--/ Earnings Card -->
 
-                                <!-- Earnings Card -->
-                                @include('charts.trend')
-                                <!--/ Earnings Card -->
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="row match-height">
-                        <div class="col-lg-6 col-12">
-                            <div class="row match-height">
-
-                                <!-- Earnings Card -->
-                                @include('charts.categories')
-                                <!--/ Earnings Card -->
-                            </div>
                         </div>
                     </div>
                     <div class="row match-height">
-                        <div class="col-lg-6 col-12">
-                            <div class="row match-height">
+                        <div class="col-lg-12 col-12">
 
-                                <!-- Earnings Card -->
-                                @include('charts.topics')
-                                <!--/ Earnings Card -->
-                            </div>
+
+                            <!-- Earnings Card -->
+                            @include('charts.categories')
+                            <!--/ Earnings Card -->
+
                         </div>
                     </div>
                     <div class="row match-height">
-                        <div class="col-lg-6 col-12">
-                            <div class="row match-height">
+                        <div class="col-lg-12 col-12">
 
-                                <!-- Earnings Card -->
-                                @include('charts.heatmap')
-                                <!--/ Earnings Card -->
-                            </div>
+
+                            <!-- Earnings Card -->
+                            @include('charts.topics')
+                            <!--/ Earnings Card -->
+
+                        </div>
+                    </div>
+                    <div class="row match-height">
+                        <div class="col-lg-12 col-12">
+
+
+                            <!-- Earnings Card -->
+                            @include('charts.heatmap')
+                            <!--/ Earnings Card -->
+
                         </div>
                     </div>
 

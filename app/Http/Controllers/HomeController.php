@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Chunk;
+use Carbon\CarbonPeriod;
 use App\Models\CommentApi;
 use Illuminate\Http\Request;
-use App\Models\CommentCategory;
 use App\Models\CommentTopics;
+use App\Models\CommentCategory;
 use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
@@ -17,33 +18,32 @@ class HomeController extends Controller
     {
         // overall statistics
         $overAllComments = $this->filterData($request)
-                                        ->selectRaw("count(CASE when r_rate = 'positive' THEN 1 END) AS positive")
-                                        ->selectRaw("count(CASE when r_rate = 'negative' THEN 1 END) AS negative")
-                                        ->selectRaw("count(CASE when r_rate = 'neutral' THEN 1 END) AS neutral")
-                                        ->selectRaw("count(CASE when r_rate = 'mixed' THEN 1 END) AS mixed")
-                                        ->first();
+            ->selectRaw("count(CASE when r_rate = 'positive' THEN 1 END) AS positive")
+            ->selectRaw("count(CASE when r_rate = 'negative' THEN 1 END) AS negative")
+            ->selectRaw("count(CASE when r_rate = 'neutral' THEN 1 END) AS neutral")
+            ->selectRaw("count(CASE when r_rate = 'mixed' THEN 1 END) AS mixed")
+            ->first();
         // chuncks  statistics
         $queryChunk = $this->filterData($request)->join('chunks', 'chunks.sn_id', '=', 'comments_api.sn_id')
-                                        ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'positive' THEN 1 END) AS positive")
-                                        ->selectRaw("count(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'negative' THEN 1 END) AS negative")
-                                        ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'neutral' THEN 1 END) AS neutral")
-                                        ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'mixed' THEN 1 END) AS mixed")
-                                        ->first();
+            ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'positive' THEN 1 END) AS positive")
+            ->selectRaw("count(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'negative' THEN 1 END) AS negative")
+            ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'neutral' THEN 1 END) AS neutral")
+            ->first();
 
         $negativeChunks = $queryChunk->negative;
         $positiveChunks = $queryChunk->positive;
         $neutralChunks = $queryChunk->neutral;
-        $mixedChunks = $queryChunk->mixed;
-        $chunksCount = $negativeChunks + $positiveChunks + $neutralChunks+ $mixedChunks;
+        $chunksCount = $negativeChunks + $positiveChunks + $neutralChunks;
+
 
 
         // column-chart
         $categories = CommentCategory::filterData($request)->select('c_id', 'c_name')->get();
-        $chunksData = [];
-        $types = ['positive', 'negative', 'neutral', 'mixed'];
+        $CatsData = [];
+        $types = ['positive', 'negative', 'neutral'];
         foreach ($categories as $key => $value) {
             foreach ($types as $type) {
-                $chunksData[] = [
+                $CatsData[] = [
                     'id' => $value->c_id,
                     'name' => $value->c_name,
                     'type' =>  $type,
@@ -52,7 +52,7 @@ class HomeController extends Controller
             }
         }
         $chunksChartData = [];
-        foreach (collect($chunksData)->toArray() as $key => $value) {
+        foreach (collect($CatsData)->toArray() as $key => $value) {
             $chunksChartData[$value['type']]['data'][] = $value['value'];
             $chunksChartData[$value['type']]['name'][] = $value['name'];
         }
@@ -60,7 +60,6 @@ class HomeController extends Controller
 
         // get comments api data and count comments group by r_rate monthly
         $trendChartData = $this->getDataMonthly($request);
-
         // Topics Data
         $topicsData = $this->getTopicsData($request);
         $topics = $topicsData['topics'];
@@ -72,65 +71,154 @@ class HomeController extends Controller
         $clients = DB::table('clients')->select('c_id', 'c_acronym')->get();
         $services = DB::table('services')->select('s_id', 's_name')->get();
 
-        return view('home', compact('overAllComments', 'chunksCount', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'mixedChunks', 'colors', 'clients', 'services', 'chunksChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories'));
+        return view('home', compact('overAllComments', 'chunksCount', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'colors', 'clients', 'services', 'chunksChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories'));
     }
 
 
 
     public function getDataYearly(Request $request)
     {
+
+        $start_year = Carbon::now()->subYears(3);
+        $end_year = Carbon::now();
+        $period = collect(CarbonPeriod::create($start_year, '1 year', $end_year))->map(function ($date) {
+            return $date->format('Y');
+        })->toArray();
+
+
         // get comments api data and count comments group by r_rate yearly
-        $commentsYearly = $this->filterData($request)->whereBetween('sn_amenddate', [Carbon::now()->subYear(1), Carbon::now()])
-            ->select(DB::raw('YEAR(sn_amenddate) as year'), 'r_rate', DB::raw('count(*) as count'))
+        $commentsYearly = $this->filterData($request)->whereBetween('sn_amenddate', [$start_year, $end_year])
+            ->select(DB::raw('sn_year as year'), 'r_rate', DB::raw('count(*) as count'))
+            ->where('r_rate', '!=', 'mixed')
             ->groupBy('year', 'r_rate')
             ->get();
-
         $chartColor = collect($this->getColors())->toArray();
-        foreach ($commentsYearly as $key => $value) {
-            $rate = $value->r_rate;
-            $trendChartData[$rate]['color'] =  'rgb' . $chartColor[$rate];
-            $trendChartData[$rate]['data'][] = $value->count;
-            $trendChartData[$rate]['categories'][] = $value->year;
+        // foreach $period with $commentsYearly
+        $trendChartDataYearly = [];
+        foreach ($period as $year) {
+            $yearlyData = $commentsYearly->where('year', $year);
+            if (count($yearlyData) > 0) {
+                foreach ($yearlyData as $value) {
+                    $rate = $value->r_rate;
+                    $trendChartDataYearly[$rate]['color'] =  'rgb' . $chartColor[$rate];
+                    $trendChartDataYearly[$rate]['data'][] =  $value->count;
+                    $trendChartDataYearly[$rate]['categories'][] =   $value->year;
+                }
+            } else {
+
+                $trendChartDataYearly['neutral']['color'] =  'rgb' . $chartColor['neutral'];
+                $trendChartDataYearly['neutral']['data'][] = 0;
+                $trendChartDataYearly['neutral']['categories'][] =  $year;
+
+                $trendChartDataYearly['positive']['color'] =  'rgb' . $chartColor['positive'];
+                $trendChartDataYearly['positive']['data'][] = 0;
+                $trendChartDataYearly['positive']['categories'][] =$year;
+
+                $trendChartDataYearly['negative']['color'] =  'rgb' . $chartColor['negative'];
+                $trendChartDataYearly['negative']['data'][] = 0;
+                $trendChartDataYearly['negative']['categories'][] =$year;
+            }
         }
-        return response()->json($trendChartData);
+
+        return response()->json($trendChartDataYearly);
     }
 
     public function getDataMonthly(Request $request)
     {
 
-        $commentsMonthly = $this->filterData($request)->whereBetween('sn_amenddate', [Carbon::now()->subMonth(12), Carbon::now()])
-            ->select(DB::raw('YEAR(sn_amenddate) as year'), DB::raw('MONTH(sn_amenddate) as month'), 'r_rate', DB::raw('count(*) as count'))
+        $start_date = Carbon::now()->subMonth(11);
+        $end_date = Carbon::now();
+        $months = collect(CarbonPeriod::create($start_date, '1 month', $end_date))->map(function ($date) {
+            return $date->format('Y-m-d');
+        })->toArray();
+        $commentsMonthly = $this->filterData($request)->whereBetween('sn_amenddate', [$start_date, $end_date])
+            ->select(DB::raw('sn_year as year'), DB::raw('sn_month as month'), 'r_rate', DB::raw('count(*) as count'))
+            ->where('r_rate', '!=', 'mixed')
             ->orderBy('month', 'asc')
             ->groupBy('year', 'month', 'r_rate')
             ->get();
-
         $chartColor = collect($this->getColors())->toArray();
+
         $trendChartData = [];
-        foreach ($commentsMonthly as $key => $value) {
-            $rate = $value->r_rate;
-            $trendChartData[$rate]['color'] =  'rgb' . $chartColor[$rate];
-            $trendChartData[$rate]['data'][] = $value->count;
-            $trendChartData[$rate]['categories'][] = $value->year . '-' . date('F', mktime(0, 0, 0, $value->month, 10));
+        foreach ($months as $month) {
+
+            $m = Carbon::parse($month)->month;
+            $y = Carbon::parse($month)->year;
+            $monthData = $commentsMonthly->where('month', '=', $m)->where('year', $y);
+            if (count($monthData) > 0) {
+                foreach ($monthData as $value) {
+                    $rate = $value->r_rate;
+                    $trendChartData[$rate]['color'] =  'rgb' . $chartColor[$rate];
+                    $trendChartData[$rate]['data'][] =  $value->count;
+                    $trendChartData[$rate]['categories'][] =  date('M', mktime(0, 0, 0, $value->month, 10)) . ' ' . substr($value->year, -2);
+                }
+            } else {
+                $trendChartData['neutral']['color'] =  'rgb' . $chartColor['neutral'];
+                $trendChartData['neutral']['data'][] = 0;
+                $trendChartData['neutral']['categories'][] =   date('M', mktime(0, 0, 0, $m, 10)) . ' ' .substr($y, -2) ;
+
+                $trendChartData['positive']['color'] =  'rgb' . $chartColor['positive'];
+                $trendChartData['positive']['data'][] = 0;
+                $trendChartData['positive']['categories'][] = date('M', mktime(0, 0, 0, $m, 10)) . ' ' . substr($y, -2);
+
+                $trendChartData['negative']['color'] =  'rgb' . $chartColor['negative'];
+                $trendChartData['negative']['data'][] = 0;
+                $trendChartData['negative']['categories'][] = date('M', mktime(0, 0, 0, $m, 10)) . ' ' . substr($y, -2);
+            }
         }
+
+
         return $trendChartData;
     }
 
     public function getDataQuarterly(Request $request)
     {
         // get comments api data and count comments group by r_rate quarterly
-        $commentsQuarterly = $this->filterData($request)->whereBetween('sn_amenddate', [Carbon::now()->subMonth(3), Carbon::now()])
-            ->select(DB::raw('YEAR(sn_amenddate) as year'), DB::raw('QUARTER(sn_amenddate) as quarter'), 'r_rate', DB::raw('count(*) as count'))
+        $start_quarter = Carbon::now()->subQuarter(5);
+        $end_quarter = Carbon::now();
+        $quarters = collect(CarbonPeriod::create($start_quarter, '1 quarter', $end_quarter))->map(function ($date) {
+            return $date->format('Y-m-d');
+        })->toArray();
+
+        $commentsQuarterly = $this->filterData($request)->whereBetween('sn_amenddate', [$start_quarter, $end_quarter])
+            ->select(DB::raw('sn_year as year'), DB::raw('sn_quarter as quarter'), 'r_rate', DB::raw('count(*) as count'))
+            ->where('r_rate', '!=', 'mixed')
             ->orderBy('quarter', 'asc')
             ->groupBy('year', 'quarter', 'r_rate')
             ->get();
 
+            // dd($commentsQuarterly);
+
         $chartColor = collect($this->getColors())->toArray();
+
         $trendChartData = [];
-        foreach ($commentsQuarterly as $key => $value) {
-            $rate = $value->r_rate;
-            $trendChartData[$rate]['color'] =  'rgb' . $chartColor[$rate];
-            $trendChartData[$rate]['data'][] = $value->count;
-            $trendChartData[$rate]['categories'][] = $value->year . '-' . $value->quarter;
+        foreach ($quarters as $quarter) {
+            $q = Carbon::parse($quarter)->quarter;
+            $y = Carbon::parse($quarter)->year;
+            $quarterData = $commentsQuarterly->where('quarter', $q)->where('year', $y);
+            if (count($quarterData) > 0) {
+                foreach ($quarterData as $value) {
+                    $rate = $value->r_rate;
+                    $trendChartData[$rate]['color'] =  'rgb' . $chartColor[$rate];
+                    $trendChartData[$rate]['data'][] =  $value->count;
+                    $trendChartData[$rate]['categories'][] = 'Q' . $value->quarter . '-' . substr($value->year, -2);
+                }
+            } else {
+                $trendChartData['positive']['color'] =  'rgb' . $chartColor['positive'];
+                $trendChartData['positive']['data'][] = 0;
+                $trendChartData['positive']['categories'][] = 'Q' . $q . '-' . substr($y, -2);
+
+                $trendChartData['neutral']['color'] =  'rgb' . $chartColor['neutral'];
+                $trendChartData['neutral']['data'][] = 0;
+                $trendChartData['neutral']['categories'][] = 'Q' . $q . '-' . substr($y, -2);
+
+
+                $trendChartData['negative']['color'] =  'rgb' . $chartColor['negative'];
+                $trendChartData['negative']['data'][] = 0;
+                $trendChartData['negative']['categories'][] = 'Q' . $q . '-' . substr($y, -2);
+
+
+            }
         }
         return response()->json($trendChartData);
     }

@@ -18,7 +18,7 @@
                     <input type="radio" class="btn-check" name="radio_options" id="quarterly" autocomplete="off">
                     <label class="btn btn-outline-primary waves-effect" for="quarterly">Quarterly</label>
 
-                    <input type="radio" class="btn-check" id="yearly" autocomplete="off">
+                    <input type="radio" class="btn-check" name="radio_options" id="yearly" autocomplete="off">
                     <label class="btn btn-outline-primary waves-effect" for="yearly">Yearly</label>
                 </div>
             </div>
@@ -35,6 +35,11 @@
 
 @push('js')
     <script>
+        var colors = @json($colors);
+        var $negativeColor = `rgb${colors.negative}`;
+        var $positiveColor = `rgb${colors.positive}`;
+        var $neutralColor = `rgb${colors.neutral}`;
+
         var flatPicker = $('.flat-picker'),
             isRtl = $('html').attr('data-textdirection') === 'rtl';
         var areaChartEl = document.querySelector('#trend-chart'),
@@ -66,11 +71,12 @@
                         }
                     }
                 },
-                colors: [
-                    @foreach ($trendChartData as $key => $value)
-                        `{{ $value['color'] }}`,
+                colors: [ @foreach ($trendChartData as $key => $value)
+
+                        `{{ $trendChartData[$key]['color'] }}`,
                     @endforeach
                 ],
+
                 series: [
                     @foreach ($trendChartData as $key => $value)
                         {
@@ -97,7 +103,12 @@
                     shared: false
                 },
                 yaxis: {
-                    opposite: isRtl
+                    opposite: isRtl,
+                    labels: {
+                        formatter: function (val) {
+                            return new Intl.NumberFormat().format(val);
+                        }
+                    }
                 }
             };
 

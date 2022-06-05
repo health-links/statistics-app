@@ -26,15 +26,17 @@ Route::get('/topics/category', [HomeController::class, 'getTopicsData'])->name('
 
 
 Route::get('/insert', function () {
+    DB::table('chunks')->delete();
     $comments = DB::table('comments_api')->get();
-    $types = ['positive', 'negative', 'neutral', 'mixed'];
+
+    $types = ['positive', 'negative', 'neutral'];
 
     $data=[];
     foreach($comments as $key=> $item){
         $data[]=[
             'ch_service' => $item->sn_service,
             'sn_id' => $item->sn_id,
-            "ch_rate" => $types[rand(0,1)],
+            "ch_rate" => $types[rand(0,2)],
             "ch_amenddate" => '2022-01-19'
         ];
     }

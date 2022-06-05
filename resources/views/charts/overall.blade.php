@@ -8,7 +8,7 @@
                 </div>
             </div>
             <div class="my-auto">
-                <h4 class="fw-bolder mb-0">{{ $overAllComments->negative ?? 0 }}</h4>
+                <h4 class="fw-bolder mb-0">{{  number_format($overAllComments->negative) ?? 0 }}</h4>
                 <p class="card-text font-small-3 mb-0">Negative</p>
             </div>
         </div>
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="my-auto">
-                <h4 class="fw-bolder mb-0">{{ $overAllComments->positive ?? 0 }}</h4>
+                <h4 class="fw-bolder mb-0">{{ number_format($overAllComments->positive) ?? 0 }}</h4>
                 <p class="card-text font-small-3 mb-0">Positive</p>
             </div>
         </div>
@@ -34,7 +34,7 @@
                 </div>
             </div>
             <div class="my-auto">
-                <h4 class="fw-bolder mb-0">{{ $overAllComments->neutral ?? 0 }}</h4>
+                <h4 class="fw-bolder mb-0">{{ number_format($overAllComments->neutral) ?? 0 }}</h4>
                 <p class="card-text font-small-3 mb-0">Neutral</p>
             </div>
         </div>
@@ -47,7 +47,7 @@
                 </div>
             </div>
             <div class="my-auto">
-                <h4 class="fw-bolder mb-0">{{ $overAllComments->mixed ?? 0 }}</h4>
+                <h4 class="fw-bolder mb-0">{{ number_format($overAllComments->mixed) ?? 0 }}</h4>
                 <p class="card-text font-small-3 mb-0">Mixed</p>
             </div>
         </div>

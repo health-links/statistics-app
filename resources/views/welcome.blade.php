@@ -772,6 +772,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     @stack('js')
+    @stack('css')
 
     <script>
         $(window).on('load', function() {

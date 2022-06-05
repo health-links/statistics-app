@@ -16,17 +16,17 @@
 @push('js')
     <script>
         var colors = @json($colors);
-         var $negativeChunks = `rgb${colors.negative}`;
-         var $positiveChunks = `rgb${colors.positive}`;
-         var $neutralChunks = `rgb${colors.neutral}`;
-         var $mixedChunks = `rgb${colors.mixed}`;
+        var $negativeChunks = `rgb${colors.negative}`;
+        var $positiveChunks = `rgb${colors.positive}`;
+        var $neutralChunks = `rgb${colors.neutral}`;
+
         var flatPicker = $('.flat-picker'),
             isRtl = $('html').attr('data-textdirection') === 'rtl',
             chartColors = {
                 column: {
                     series1: '#826af9',
                     series2: '#d2b0ff',
-                    bg: '#f8d3ff'
+                    bg: '#dee2e6'
                 },
                 success: {
                     shade_100: '#7eefc7',
@@ -81,7 +81,7 @@
                     position: 'top',
                     horizontalAlign: 'start'
                 },
-                colors: [$positiveChunks, $negativeChunks, $neutralChunks, $mixedChunks],
+                colors: [$positiveChunks, $negativeChunks, $neutralChunks],
                 stroke: {
                     show: true,
                     colors: ['transparent']
@@ -98,7 +98,6 @@
                         {
                             name: "{{ $key }}",
                             data: [...@json($category['data'])]
-
                         },
                     @endforeach
 
@@ -114,7 +113,14 @@
                     opacity: 1
                 },
                 yaxis: {
-                    opposite: isRtl
+                    opposite: isRtl,
+                    labels: {
+
+                        formatter: function(val) {
+
+                            return  new Intl.NumberFormat().format(parseInt(Math.abs(val)));
+                        }
+                    }
                 }
             };
         if (typeof columnChartEl !== undefined && columnChartEl !== null) {
