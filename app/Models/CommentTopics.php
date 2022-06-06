@@ -16,4 +16,14 @@ class CommentTopics extends Model
         return $this->belongsToMany(CommentApi::class, 'comment_topic', 'topic_id', 'comment_id')->withPivot('type');
     }
 
+    public function negative()
+    {
+        return $this->comments()->wherePivot('type', '=', 'negative');
+    }
+
+    public function positive()
+    {
+        return $this->comments()->wherePivot('type', '=', 'positive');
+    }
+
 }

@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Illuminate\Http\Request;
-use App\Models\CommentTopics;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\HelperController;
 use App\Http\Filters\CommentApi\CommentApiFilter;
@@ -109,17 +107,10 @@ class HomeController extends Controller
 
     public function getTopicsData()
     {
-        $allTopics = (new CommentTopicsFilter());
-        $topics = $allTopics->select('t_id', 't_name')->whereHas('comments')->get();
-        $ids = $allTopics->pluck('t_id')->toArray();
-        $dataPivot = DB::table('comment_topic')->whereIn('topic_id', $ids)->select('topic_id', 'type')->get();
+        $topics = (new CommentTopicsFilter())->whereHas('comments')->withCount('negative', 'positive')->get();
+        $topicPositive = $topics->pluck('positive_count')->toArray();
+        $topicNegative = $topics->pluck('negative_count')->toArray();
 
-        $topicPositive = [];
-        $topicNegative = [];
-        $topics->map(function ($topic) use ($dataPivot, &$topicPositive, &$topicNegative) {
-            array_push($topicPositive, $dataPivot->where('topic_id', $topic->t_id)->where('type', 'positive')->count());
-            array_push($topicNegative, -$dataPivot->where('topic_id', $topic->t_id)->where('type', 'negative')->count());
-        });
         return [
             'topics' => $topics,
             'topicPositive' => $topicPositive,
@@ -153,25 +144,21 @@ class HomeController extends Controller
 
     private function getCategoriesData()
     {
-        $categories = (new CommentCategoryFilter())->select('c_id','c_name')->get();
-        $CatsData = [];
-        $types = ['positive', 'negative', 'neutral'];
-        $categories->map(function ($category) use ($types, &$CatsData) {
-            collect($types)->map(function ($type) use ($category, &$CatsData) {
-                $CatsData[] = [
-                    'id' => $category->c_id,
-                    'name' => $category->c_name,
-                    'type' =>  $type,
-                    'value' => $category->comments->where('r_rate', '=', $type)->count()
-                ];
-                return $CatsData;
-            });
-        });
-        $categoryChartData = [];
-        collect($CatsData)->map(function ($item) use (&$categoryChartData) {
-            $categoryChartData[$item['type']]['data'][] = $item['value'];
-            $categoryChartData[$item['type']]['name'][] = $item['name'];
-        });
+        $categories = (new CommentCategoryFilter())->whereHas('comments')->select()->withCount(['negative', 'positive', 'neutral'])->get();
+        $categoryChartData = [
+            'positive' => [
+                'data' => $categories->pluck('positive_count')->toArray(),
+                'name' =>   $categories->pluck('c_name')->toArray()
+            ],
+            'negative' => [
+                'data' => $categories->pluck('negative_count')->toArray(),
+                'name' =>   $categories->pluck('c_name')->toArray()
+            ],
+            'neutral' => [
+                'data' => $categories->pluck('neutral_count')->toArray(),
+                'name' =>   $categories->pluck('c_name')->toArray()
+            ]
+        ];
 
         return ['categoryChartData' => $categoryChartData, 'categories' => $categories];
     }
