@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Illuminate\Http\Request;
-use App\Models\CommentTopics;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\HelperController;
 use App\Http\Filters\CommentApi\CommentApiFilter;
