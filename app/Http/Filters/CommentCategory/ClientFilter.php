@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Filters\CommentApi;
+namespace App\Http\Filters\CommentCategory;
 
 use Spatie\QueryBuilder\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
@@ -8,6 +8,9 @@ class ClientFilter implements Filter
 {
     public function __invoke(Builder $query, $value, string $property)
     {
-        return $query->where('sn_client', $value);
+
+        $query->whereHas('comments', function ($q) use ($value) {
+            return $q->where('sn_client', '=', $value);
+        });
     }
 }

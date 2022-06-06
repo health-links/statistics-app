@@ -1,22 +1,21 @@
 <?php
 
-namespace App\Http\Filters\CommentApi;
+namespace App\Http\Filters\CommentCategory;
 
-use App\Models\CommentApi;
+use App\Models\CommentCategory;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
-use App\Http\Filters\CommentApi\ToFilter;
-use App\Http\Filters\CommentApi\FromFilter;
-use App\Http\Filters\CommentApi\ClientFilter;
-use App\Http\Filters\CommentApi\ServiceFilter;
-
-class CommentApiFilter extends QueryBuilder
+use App\Http\Filters\CommentCategory\ToFilter;
+use App\Http\Filters\CommentCategory\FromFilter;
+use App\Http\Filters\CommentCategory\ClientFilter;
+use App\Http\Filters\CommentCategory\ServiceFilter;
+class CommentCategoryFilter extends QueryBuilder
 {
     // counsturctor
     public function __construct()
     {
-        $comments_api = (new CommentApi)->query();
-        parent::__construct($comments_api);
+        $data = (new CommentCategory)->query();
+        parent::__construct($data);
         $this->allowedFilters([
             AllowedFilter::custom('client_id', new ClientFilter),
             AllowedFilter::custom('service_id', new ServiceFilter),
@@ -24,6 +23,4 @@ class CommentApiFilter extends QueryBuilder
             AllowedFilter::custom('to', new ToFilter)
         ]);
     }
-
-
 }

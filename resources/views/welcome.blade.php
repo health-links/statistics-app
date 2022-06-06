@@ -590,7 +590,7 @@
                 <form action="{{ route('home') }}" method="GET" class="px-2">
                     <div class="mb-2">
                         <label for="">Clients</label>
-                        <select name="client_id" class="form-control" id="">
+                        <select name="filter[client_id]" class="form-control" id="">
                             <option value="">Select Client</option>
                             @foreach ($clients as $client)
                                 <option value="{{ $client->c_id }}">{{ $client->c_acronym }}</option>
@@ -599,7 +599,7 @@
                     </div>
                     <div class="mb-2">
                         <label for="">Service</label>
-                        <select name="service_id" class="form-control" id="">
+                        <select name="filter[service_id]" class="form-control" id="">
                             <option value="">Select service</option>
                             @foreach ($services as $service)
                                 <option value="{{ $service->s_id }}">{{ $service->s_name }}</option>
@@ -610,12 +610,12 @@
                     <div class="mb-2">
                         <label class="form-label" for="fp-default">Duration From Date</label>
                         <input type="text" id="fp-default" class="form-control flatpickr flatpickr-input"
-                            placeholder="YYYY-MM-DD" readonly="readonly" name="from">
+                            placeholder="YYYY-MM-DD" readonly="readonly" name="filter[from]">
                     </div>
                     <div class="mb-2">
                         <label class="form-label" for="fp-default">Duration To Date</label>
                         <input type="text" id="fp-default" class="form-control flatpickr flatpickr-input"
-                            placeholder="YYYY-MM-DD" readonly="readonly" name="to">
+                            placeholder="YYYY-MM-DD" readonly="readonly" name="filter[to]">
                     </div>
 
                     <div>

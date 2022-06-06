@@ -21,7 +21,7 @@
                         </div>
                         <div class="d-flex">
                             <div class="mb-1">
-                                <select class="select2 form-select select2-hidden-accessible" id="category">
+                                <select class="select2 form-select select2-hidden-accessible" name="filter[category]" id="category">
                                     <option value="all">Categories</option>
                                     @foreach ($categories as $category)
                                         <option value="{{ $category->c_id }}">{{ $category->c_name }}</option>
@@ -36,7 +36,7 @@
             <div class="row">
 
                 <div class="col-12 revenue-report-wrapper">
-  
+
 
                     <div id="revenue-report-chart2"></div>
                 </div>
@@ -145,7 +145,8 @@
                 type: "GET",
                 dataType: "json",
                 data: {
-                    category: $category.value
+                    "filter[category]": `${$category.value}`
+
                 },
                 success: function(data) {
 

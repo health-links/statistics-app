@@ -43,20 +43,21 @@ Route::get('/topics/category', [HomeController::class, 'getTopicsData'])->name('
 //     DB::table('chunks')->insert($data);
 //     return "done";
 // });
-Route::get('/insert', function () {
-DB::table('comment_category')->delete();
-    $comments = DB::table('comments_api')->get();
+// Route::get('/insert', function () {
+//     // DB::table('comment_topic')->delete();
+//     $comments = DB::table('comments_api')->where('sn_client',1)->get();
+//     $topics = DB::table('comments_topics')->limit(20)->get()->toArray();
+//     $types = ['positive', 'negative'];
 
-    $types = DB::table('comments_categories')->count();
+//     $data=[];
+//     foreach($comments as $key=> $item){
+//         $data[]=[
+//             'comment_id' => $item->sn_id,
+//             "type" => $types[rand(0, 1)],
+//             'topic_id' => $topics[rand(0, 18)]->t_id
 
-    $data=[];
-    foreach($comments as $key=> $item){
-        $data[]=[
-            'comment_id' => $item->sn_id,
-            "category_id" => rand(1, $types),
-
-        ];
-    }
-    DB::table('comment_category')->insert($data);
-    return "done";
-});
+//         ];
+//     }
+//     DB::table('comment_topic')->insert($data);
+//     return "done";
+// });
