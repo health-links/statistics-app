@@ -103,6 +103,7 @@
                     @endforeach
 
                 ],
+
                 xaxis: {
                     categories: [
                         @foreach (!empty($categoryChartData) ? $categoryChartData['positive']['name'] : [] as $key => $value)
