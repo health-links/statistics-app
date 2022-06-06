@@ -179,6 +179,7 @@ class HomeController extends Controller
             $categoryChartData[$item['type']]['data'][] = $item['value'];
             $categoryChartData[$item['type']]['name'][] = $item['name'];
         });
+
         return ['categoryChartData' => $categoryChartData, 'categories' => $categories];
     }
 
