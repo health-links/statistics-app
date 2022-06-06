@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -21,7 +20,6 @@ class CommentTopics extends Model
         $query->where('t_report', '=', '1');
         $query->when($request->service_id !== null, function ($q) {
             $q->whereHas('comments', function ($q) {
-
                 return $q->where('sn_service', '=', request()->service_id);
             });
         });

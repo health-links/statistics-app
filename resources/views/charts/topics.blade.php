@@ -36,7 +36,7 @@
             <div class="row">
 
                 <div class="col-12 revenue-report-wrapper">
-  
+
 
                     <div id="revenue-report-chart2"></div>
                 </div>
@@ -145,7 +145,7 @@
                 type: "GET",
                 dataType: "json",
                 data: {
-                    category: $category.value
+                    category: `filter[category=${$category.value}]`
                 },
                 success: function(data) {
 
