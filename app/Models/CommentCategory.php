@@ -15,6 +15,24 @@ class CommentCategory extends Model
     {
         return $this->belongsToMany(CommentApi::class, 'comment_category', 'category_id','comment_id');
     }
+    // create a function to get the negative comments
+    public function negative()
+    {
+        return $this->comments()->where('r_rate', '=', 'negative');
+    }
+
+    // create a function to get the negative comments
+    public function positive()
+    {
+        return $this->comments()->where('r_rate', '=', 'positive');
+    }
+
+    public function neutral()
+    {
+        return $this->comments()->where('r_rate', '=', 'neutral');
+    }
+
+
 
 
 }
