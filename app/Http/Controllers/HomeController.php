@@ -109,7 +109,6 @@ class HomeController extends Controller
 
     public function getTopicsData()
     {
-        // $allTopics = CommentTopics::filterData();
         $allTopics = (new CommentTopicsFilter());
         $topics = $allTopics->select('t_id', 't_name')->whereHas('comments')->get();
         $ids = $allTopics->pluck('t_id')->toArray();
