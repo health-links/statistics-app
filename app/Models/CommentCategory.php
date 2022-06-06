@@ -16,29 +16,12 @@ class CommentCategory extends Model
         return $this->belongsToMany(CommentApi::class, 'comment_category', 'category_id','comment_id');
     }
 
-    public function getNg()
-    {
-        return $this->comments()->where('r_rate', '=', 'negative')->count();
-    }
 
-    public function getP()
-    {
-        return $this->comments()->where('r_rate', '=', 'positive')->count();
-    }
-
-    public function getNe()
-    {
-        return $this->comments()->where('r_rate', '=', 'neutral')->count();
-    }
-
-    public function getM()
-    {
-        return $this->comments()->where('r_rate', '=', 'mixed')->count();
-    }
 
     public function scopeFilterData($query, $request)
     {
         $query->whereHas('comments')->where('c_report', '=', '1');
+
         $query->when($request->service_id !== null, function ($q) {
             $q->whereHas('comments', function ($q) {
                 return $q->where('sn_service', '=', request()->service_id);

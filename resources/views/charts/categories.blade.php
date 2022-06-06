@@ -94,7 +94,7 @@
                     }
                 },
                 series: [
-                    @foreach ($chunksChartData as $key => $category)
+                    @foreach ($categoryChartData as $key => $category)
                         {
                             name: "{{ $key }}",
                             data: [...@json($category['data'])]
@@ -104,7 +104,7 @@
                 ],
                 xaxis: {
                     categories: [
-                        @foreach (!empty($chunksChartData) ? $chunksChartData['positive']['name'] : [] as $key => $value)
+                        @foreach (!empty($categoryChartData) ? $categoryChartData['positive']['name'] : [] as $key => $value)
                             "{{ $value }}",
                         @endforeach
                     ]
@@ -117,8 +117,7 @@
                     labels: {
 
                         formatter: function(val) {
-
-                            return  new Intl.NumberFormat().format(parseInt(Math.abs(val)));
+                            return  new Intl.NumberFormat().format(val);
                         }
                     }
                 }

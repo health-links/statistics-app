@@ -15,16 +15,6 @@ class CommentTopics extends Model
     {
         return $this->belongsToMany(CommentApi::class, 'comment_topic', 'topic_id', 'comment_id')->withPivot('type');
     }
-
-    public function getNegativeTopics()
-    {
-        return DB::table('comment_topic')->where('topic_id', $this->t_id)->where('type', 'negative')->count();
-    }
-    public function getPositiveTopics()
-    {
-        return DB::table('comment_topic')->where('topic_id', $this->t_id)->where('type', 'positive')->count();
-    }
-
     // filter data
     public function scopeFilterData($query, $request)
     {
@@ -36,14 +26,14 @@ class CommentTopics extends Model
         });
         $query->when($request->client_id !== null, function ($q) {
             $q->whereHas('comments', function ($q) {
-                return $q->where('sn_client', '=', request()->client_id);;
+                return $q->where('sn_client', '=', request()->client_id);
             });
         });
         $query->when($request->category !== null && $request->category !== 'all', function ($q) {
 
             $q->whereHas('comments', function ($q) {
-                $q->whereHas('categories', function ($q3) {
-                    return $q3->where('c_id', request()->category)->where('c_report', '=', 1);
+                $q->whereHas('categories', function ($q) {
+                    return $q->where('c_id', request()->category)->where('c_report', '=', 1);
                 });
             });
         });
