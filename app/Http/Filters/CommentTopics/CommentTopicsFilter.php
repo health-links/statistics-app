@@ -11,14 +11,13 @@ use App\Http\Filters\CommentTopics\CategoryFilter;
 
 class CommentTopicsFilter extends QueryBuilder
 {
-    // counsturctor
     public function __construct()
     {
-        $comments_topics = (new CommentTopics)->query();
-        parent::__construct($comments_topics);
+        $data = (new CommentTopics)->query();
+        parent::__construct($data);
         $this->allowedFilters([
-            AllowedFilter::custom('client_id', new ClientFilter),
             AllowedFilter::custom('service_id', new ServiceFilter),
+            AllowedFilter::custom('client_id', new ClientFilter),
             AllowedFilter::custom('category', new CategoryFilter),
         ]);
     }

@@ -105,7 +105,7 @@
                 ],
                 xaxis: {
                     categories: [
-                        @foreach (!empty($chunksChartData) ? $chunksChartData['positive']['name'] : [] as $key => $value)
+                        @foreach (!empty($categoryChartData) ? $categoryChartData['positive']['name'] : [] as $key => $value)
                             "{{ $value }}",
                         @endforeach
                     ]

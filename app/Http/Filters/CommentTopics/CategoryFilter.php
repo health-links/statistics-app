@@ -9,14 +9,14 @@ class CategoryFilter implements Filter
 {
     public function __invoke(Builder $query, $value, string $property)
     {
-        if(request()->category === 'all') {
-            return  $query->whereHas('comments');
-        }
-        $query->whereHas('comments', function ($q)  {
-            return $q->whereHas('categories', function ($q) {
-                return $q->where('category_id', '=', request()->category);
+        if ($value === 'all') {
+             $query->whereHas('comments');
+        } else {
+            $query->whereHas('comments', function ($q) use ($value) {
+                 $q->whereHas('categories', function ($q) use ($value) {
+                     $q->where('c_id', $value);
+                });
             });
-        });
-
+        }
     }
 }

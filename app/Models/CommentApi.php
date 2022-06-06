@@ -28,21 +28,5 @@ class CommentApi extends Model
         return $this->hasMany(Chunk::class, 'sn_id', 'sn_id');
     }
 
-    // scope for filter data
-    public function scopeFilterData($query, $request)
-    {
-        $query->when($request->service_id !== null, function ($q) use ($request) {
-            return $q->where('sn_service', $request->service_id);
-        });
-        $query->when($request->client_id !== null, function ($q) use ($request) {
-            return $q->where('sn_client', $request->client_id);
-        });
-        $query->when($request->from !== null, function ($q) use ($request) {
-            return $q->where('sn_amenddate', '>=', $request->from);
-        });
-        $query->when($request->to !== null, function ($q) use ($request) {
-            return $q->where('sn_amenddate', '<=', $request->to);
-        });
-        return $query;
-    }
+
 }
