@@ -21,6 +21,7 @@ class CommentTopics extends Model
         $query->where('t_report', '=', '1');
         $query->when($request->service_id !== null, function ($q) {
             $q->whereHas('comments', function ($q) {
+
                 return $q->where('sn_service', '=', request()->service_id);
             });
         });
@@ -30,9 +31,12 @@ class CommentTopics extends Model
             });
         });
         $query->when($request->category !== null && $request->category !== 'all', function ($q) {
-            $q->whereHas('comments.categories', function ($q) {
-                return $q->where('c_id', request()->category)->where('c_report', '=', 1);
+            $q->whereHas('comments', function ($q) {
+                return  $q->whereHas('categories', function ($q) {
+                    return $q->where('category_id', '=', request()->category);
+                });
             });
+
         });
         $query->when($request->category !== null && $request->category === 'all', function ($q) {
             return $q->whereHas('comments');

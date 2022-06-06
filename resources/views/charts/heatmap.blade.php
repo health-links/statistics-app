@@ -1,12 +1,13 @@
 <div class="col-lg-12 col-md-6 col-12">
     <div class="card earnings-card">
+                <div class="card-header">
+                        <h6>Topics Heatmap</h6>
+                    </div>
         <div class="card-body">
             <div class="row">
 
                 <div class="col-12">
-                    <div>
-                        <h2>Heatmap</h2>
-                    </div>
+                
                     <div id="heatmap-chart"></div>
                 </div>
             </div>
@@ -25,7 +26,7 @@
                 var i = 0;
                 var series = [];
                 while (i < count) {
-                    var x = 'w' + (i + 1).toString();
+                    var x = 'Topic ' + (i + 1).toString();
                     var y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
 
                     series.push({
@@ -104,49 +105,49 @@
                         }
                     },
                     series: [{
-                            name: 'SUN',
+                            name: 'Access',
                             data: generateDataHeat(24, {
                                 min: 0,
                                 max: 60
                             })
                         },
                         {
-                            name: 'MON',
+                            name: 'Admission',
                             data: generateDataHeat(24, {
                                 min: 0,
                                 max: 60
                             })
                         },
                         {
-                            name: 'TUE',
+                            name: 'Arrival',
                             data: generateDataHeat(24, {
                                 min: 0,
                                 max: 60
                             })
                         },
                         {
-                            name: 'WED',
+                            name: 'Doctor',
                             data: generateDataHeat(24, {
                                 min: 0,
                                 max: 60
                             })
                         },
                         {
-                            name: 'THU',
+                            name: 'Lab',
                             data: generateDataHeat(24, {
                                 min: 0,
                                 max: 60
                             })
                         },
                         {
-                            name: 'FRI',
+                            name: 'Meals',
                             data: generateDataHeat(24, {
                                 min: 0,
                                 max: 60
                             })
                         },
                         {
-                            name: 'SAT',
+                            name: 'Nurse',
                             data: generateDataHeat(24, {
                                 min: 0,
                                 max: 60
@@ -155,7 +156,7 @@
                     ],
                     xaxis: {
                         labels: {
-                            show: false
+                            show: true
                         },
                         axisBorder: {
                             show: false

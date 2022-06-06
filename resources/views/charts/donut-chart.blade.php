@@ -6,20 +6,21 @@
 
     </style>
 @endpush
-<div class="col-lg-12 col-md-6 col-12 ">
+
     <div class="card earnings-card dount">
+        <div class="card-header">
+                        <h6>Chunks Pie Chart</h6>
+                    </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-12 flex">
-                    <div>
-                        <h4>Chunks Pie Chart</h4>
-                    </div>
-                    <div id="donut-chart" class="pt-5"></div>
+                    
+                    <div id="donut-chart" ></div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
 @push('js')
     <script>
         function decimalAdjust(type, value, exp) {

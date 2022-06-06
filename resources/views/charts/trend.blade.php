@@ -1,15 +1,9 @@
-<div class="col-lg-12 col-md-12 col-12">
+
     <div class="card earnings-card">
-        <div class="card-body">
-            <div
-                class="
-            card-header
-            d-flex
-            flex-md-row flex-column
-            justify-content-md-between justify-content-start
-            align-items-md-center align-items-start
-          ">
-                <h4 class="card-title">Trend</h4>
+        <div class="card-header trendheader">
+                <h6 class="card-title" style="float:left">Trend</h6>
+                <div class="btnsWrap">
+            <div class="d-flex flex-md-row flex-column justify-content-md-between justify-content-start align-items-md-center align-items-start">
                 <div class="btn-group mt-md-0 mt-1" role="group" aria-label="Basic radio toggle button group">
                     <input type="radio" class="btn-check" name="radio_options" id="monthly" autocomplete="off"
                         checked="">
@@ -22,6 +16,10 @@
                     <label class="btn btn-outline-primary waves-effect" for="yearly">Yearly</label>
                 </div>
             </div>
+            </div>
+        </div>
+        <div class="card-body">
+
             <div class="row">
 
                 <div class="col-12">
@@ -31,7 +29,7 @@
             </div>
         </div>
     </div>
-</div>
+
 
 @push('js')
     <script>

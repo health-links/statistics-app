@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('comment_id');
             $table->unsignedBigInteger('category_id');
+
         });
     }
 

@@ -1,12 +1,13 @@
 <div class="col-lg-12 col-md-12 col-12">
     <div class="card earnings-card">
+           <div class="card-header">
+                        <h6 class="heading-card">Categories</h6>
+                    </div>
         <div class="card-body">
             <div class="row">
 
                 <div class="col-12">
-                    <div>
-                        <h2>Categories</h2>
-                    </div>
+
                     <div id="chunks-chart"></div>
                 </div>
             </div>
@@ -26,7 +27,7 @@
                 column: {
                     series1: '#826af9',
                     series2: '#d2b0ff',
-                    bg: '#dee2e6'
+                    bg: '#fafafa'
                 },
                 success: {
                     shade_100: '#7eefc7',
@@ -104,7 +105,7 @@
                 ],
                 xaxis: {
                     categories: [
-                        @foreach (!empty($categoryChartData) ? $categoryChartData['positive']['name'] : [] as $key => $value)
+                        @foreach (!empty($chunksChartData) ? $chunksChartData['positive']['name'] : [] as $key => $value)
                             "{{ $value }}",
                         @endforeach
                     ]
@@ -112,12 +113,16 @@
                 fill: {
                     opacity: 1
                 },
+
                 yaxis: {
                     opposite: isRtl,
                     labels: {
 
                         formatter: function(val) {
-                            return  new Intl.NumberFormat().format(Math.round(val));
+
+                        return  new Intl.NumberFormat().format(val);
+
+
                         }
                     }
                 }
