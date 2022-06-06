@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Chunk;
-use Carbon\CarbonPeriod;
+use App\Http\Filters\CommentApi\CommentApiFilter;
 use App\Models\CommentApi;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use App\Models\CommentTopics;
 use App\Models\CommentCategory;
@@ -61,7 +61,7 @@ class HomeController extends Controller
             return $date->format('Y');
         })->toArray();
         // get comments api data and count comments group by r_rate yearly
-        $commentsYearly = $this->filterData($request)->whereBetween('sn_amenddate', [$start_year, $end_year])
+        $commentsYearly = $this->filterData()->whereBetween('sn_amenddate', [$start_year, $end_year])
             ->select(DB::raw('sn_year as year'), 'r_rate', DB::raw('count(*) as count'))
             ->where('r_rate', '!=', 'mixed')
             ->groupBy('year', 'r_rate')
@@ -79,7 +79,7 @@ class HomeController extends Controller
         $period = collect(CarbonPeriod::create($start_date, '1 month', $end_date))->map(function ($date) {
             return $date->format('Y-m-d');
         })->toArray();
-        $commentsMonthly = $this->filterData($request)->whereBetween('sn_amenddate', [$start_date, $end_date])
+        $commentsMonthly = $this->filterData()->whereBetween('sn_amenddate', [$start_date, $end_date])
             ->select(DB::raw('sn_year as year'), DB::raw('sn_month as month'), 'r_rate', DB::raw('count(*) as count'))
             ->where('r_rate', '!=', 'mixed')
             ->orderBy('month', 'asc')
@@ -98,7 +98,7 @@ class HomeController extends Controller
             return $date->format('Y-m-d');
         })->toArray();
 
-        $commentsQuarterly = $this->filterData($request)->whereBetween('sn_amenddate', [$start_quarter, $end_quarter])
+        $commentsQuarterly = $this->filterData()->whereBetween('sn_amenddate', [$start_quarter, $end_quarter])
             ->select(DB::raw('sn_year as year'), DB::raw('sn_quarter as quarter'), 'r_rate', DB::raw('count(*) as count'))
             ->where('r_rate', '!=', 'mixed')
             ->orderBy('quarter', 'asc')
@@ -132,15 +132,15 @@ class HomeController extends Controller
         $data = json_decode(DB::table('charts_bgs')->where('bkey', 'rates')->first()->bvals);
         return  $data;
     }
-    private function filterData($request)
+    private function filterData()
     {
-        return CommentApi::filterData($request);
+        return (new CommentApiFilter());
     }
 
 
     private function getOverAllComments($request)
     {
-        return $this->filterData($request)
+         return $this->filterData()
             ->selectRaw("count(CASE when r_rate = 'positive' THEN 1 END) AS positive")
             ->selectRaw("count(CASE when r_rate = 'negative' THEN 1 END) AS negative")
             ->selectRaw("count(CASE when r_rate = 'neutral' THEN 1 END) AS neutral")
@@ -148,23 +148,23 @@ class HomeController extends Controller
             ->first();
     }
 
-    private function getChunksData($request)
+    private function getChunksData()
     {
-        return $this->filterData($request)->join('chunks', 'chunks.sn_id', '=', 'comments_api.sn_id')
-            ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'positive' THEN 1 END) AS positive")
-            ->selectRaw("count(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'negative' THEN 1 END) AS negative")
-            ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'neutral' THEN 1 END) AS neutral")
-            ->first();
+        return $this->filterData()->join('chunks', 'chunks.sn_id', '=', 'comments_api.sn_id')
+        ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'positive' THEN 1 END) AS positive")
+        ->selectRaw("count(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'negative' THEN 1 END) AS negative")
+        ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'neutral' THEN 1 END) AS neutral")
+        ->first();
     }
 
     private function getCategoriesData($request)
     {
         $categories = CommentCategory::filterData($request)->select('c_id', 'c_name')->get();
         $CatsData = [];
-
         $types = ['positive', 'negative', 'neutral'];
+
         $categories->map(function ($category) use ($types, &$CatsData) {
-            collect($types)->map(function ($type) use ($category, &$CatsData) {
+           collect($types)->map(function ($type) use ($category, &$CatsData) {
                 $CatsData[] = [
                     'id' => $category->c_id,
                     'name' => $category->c_name,
@@ -172,14 +172,14 @@ class HomeController extends Controller
                     'value' => $category->comments->where('r_rate', '=', $type)->count()
                 ];
                 return $CatsData;
-            });
+           });
         });
         $categoryChartData = [];
         collect($CatsData)->map(function ($item) use (&$categoryChartData) {
             $categoryChartData[$item['type']]['data'][] = $item['value'];
             $categoryChartData[$item['type']]['name'][] = $item['name'];
         });
-        return ['categoryChartData' => $categoryChartData, 'categories' => $categories];
+        return ['categoryChartData'=> $categoryChartData, 'categories'=>$categories];
     }
 
 

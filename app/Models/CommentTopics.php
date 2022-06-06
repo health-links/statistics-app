@@ -30,11 +30,8 @@ class CommentTopics extends Model
             });
         });
         $query->when($request->category !== null && $request->category !== 'all', function ($q) {
-
-            $q->whereHas('comments', function ($q) {
-                $q->whereHas('categories', function ($q) {
-                    return $q->where('c_id', request()->category)->where('c_report', '=', 1);
-                });
+            $q->whereHas('comments.categories', function ($q) {
+                return $q->where('c_id', request()->category)->where('c_report', '=', 1);
             });
         });
         $query->when($request->category !== null && $request->category === 'all', function ($q) {

@@ -21,7 +21,6 @@ class CommentCategory extends Model
     public function scopeFilterData($query, $request)
     {
         $query->whereHas('comments')->where('c_report', '=', '1');
-
         $query->when($request->service_id !== null, function ($q) {
             $q->whereHas('comments', function ($q) {
                 return $q->where('sn_service', '=', request()->service_id);

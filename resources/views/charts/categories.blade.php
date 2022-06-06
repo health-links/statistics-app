@@ -117,7 +117,7 @@
                     labels: {
 
                         formatter: function(val) {
-                            return  new Intl.NumberFormat().format(val);
+                            return  new Intl.NumberFormat().format(Math.round(val));
                         }
                     }
                 }
