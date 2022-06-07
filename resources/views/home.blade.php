@@ -1,4 +1,4 @@
-@extends('./welcome')
+@extends('layouts.app')
 
 @section('content')
     <div class="app-content content ">
@@ -74,9 +74,6 @@
 
                         </div>
                     </div>
-
-
-
                 </section>
             </div>
         </div>
