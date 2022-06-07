@@ -40,13 +40,15 @@ class HomeController extends Controller
         $topicPositive = $topicsData['topicPositive'];
         $topicNegative = $topicsData['topicNegative'];
 
+
+        // heatmap Data
+        $heatmapData = $this->getHeatMapData();
+
         // data for filters
         $colors = HelperController::getColors();
         $clients = DB::table('clients')->select('c_id', 'c_acronym')->get();
         $services = DB::table('services')->select('s_id', 's_name')->get();
-
-
-        return view('home', compact('overAllComments', 'chunksCount', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'colors', 'clients', 'services', 'categoryChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories'));
+        return view('home', compact('overAllComments', 'chunksCount', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'colors', 'clients', 'services', 'categoryChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories', 'heatmapData'));
     }
 
 
@@ -164,5 +166,27 @@ class HomeController extends Controller
     }
 
 
+    public function getHeatMapData()
+    {
+        $categories = (new CommentCategoryFilter())
+            ->join('comment_category', 'comment_category.category_id', '=', 'comments_categories.c_id')
+            ->join('comment_topic', 'comment_topic.comment_id', '=', 'comment_category.comment_id')
+            ->join('comments_topics', 'comments_topics.t_id', '=', 'comment_topic.topic_id')
+            ->select('comments_categories.c_name as category_name', 'comment_category.comment_id', 'comments_topics.t_name as topic_name', 'comment_topic.topic_id', DB::raw('count(comment_topic.topic_id) as count'))
+            ->groupBy('comments_categories.c_name', 'comments_topics.t_name', 'comment_topic.topic_id')
+            ->get();
 
+        $date = [];
+        $categories = $categories->map(function ($category) use (&$date) {
+            if (array_key_exists($category->category_name, $date)) {
+                $date[$category->category_name][$category->topic_name] = $category->count;
+            } else {
+                $date[$category->category_name] = [$category->topic_name => $category->count];
+            }
+            return $date;
+        });
+        return $date;
+
+
+    }
 }
