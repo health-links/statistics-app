@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use App\Models\CommentTopics;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\HelperController;
 use App\Http\Filters\CommentTopics\CommentTopicsFilter;
@@ -102,16 +103,27 @@ class HomeController extends Controller
 
     public function getTopicsData()
     {
-        $topics = (new CommentTopicsFilter())->join('comment_topic', 'comment_topic.topic_id', '=', 'comments_topics.t_id')
-            ->select('comment_topic.topic_id', 'comments_topics.t_name','comment_topic.type')
+        $topics = DB::table('comments_topics')
+            ->join('comment_topic', 'comment_topic.topic_id', '=', 'comments_topics.t_id')
+            ->join('comments_api', 'comments_api.sn_id', '=', 'comment_topic.comment_id')
+            ->when(request()->filter && array_key_exists('category',request()->filter), function ($q) {
+                $q->join('comment_category', 'comment_category.comment_id', '=', 'comments_api.sn_id')
+                    ->where('comment_category.category_id', request()->filter['category']);
+            })
+            ->when(request()->filter && array_key_exists('client_id', request()->filter) , function ($q) {
+                $q->where('comments_api.sn_client', request()->filter['client_id']);
+            })
+            ->when(request()->filter && array_key_exists('service_id', request()->filter) , function ($q) {
+                $q->where('comments_api.sn_service', request()->filter['service_id']);
+            })
+            ->select('comment_topic.topic_id', 'comments_topics.t_name', 'comment_topic.type')
             ->selectRaw("count(CASE when comment_topic.type = 'positive' THEN 1 END) AS positive_count")
             ->selectRaw("count(CASE when comment_topic.type = 'negative' THEN 1 END) AS negative_count")
             ->groupBy('comment_topic.topic_id', 'comments_topics.t_name')
             ->get();
-        // $topics = (new CommentTopicsFilter())->whereHas('comments')->withCount('negative', 'positive')->get();
+
         $topicPositive = $topics->pluck('positive_count')->toArray();
         $topicNegative = $topics->pluck('negative_count')->toArray();
-
         return [
             'topics' => $topics,
             'topicPositive' => $topicPositive,
@@ -149,7 +161,7 @@ class HomeController extends Controller
             ->selectRaw("count(CASE WHEN comments_api.sn_id = comment_category.comment_id and comments_api.r_rate = 'neutral' THEN 1 END) AS neutral_count")
             ->groupBy('comments_categories.c_id', 'comments_categories.c_name')
             ->get();
-        // dd($categories);
+
         // $categories = HelperController::getCommentCategory()->whereHas('comments')->select()->withCount(['negative', 'positive', 'neutral'])->get();
         $categoryChartData = [
             'positive' => [
@@ -175,11 +187,11 @@ class HomeController extends Controller
             ->join('comment_category', 'comment_category.category_id', '=', 'comments_categories.c_id')
             ->when(request()->filter && request()->filter['client_id'], function ($q) {
                 $q->join('comments_api as comments_Client', 'comments_Client.sn_id', '=', 'comment_category.comment_id')
-                    ->where('comments_Client.sn_client', request()->filter['client_id']);;
+                    ->where('comments_Client.sn_client', request()->filter['client_id']);
             })
             ->when(request()->filter && request()->filter['service_id'], function ($q) {
                 $q->join('comments_api as comments_service', 'comments_service.sn_id', '=', 'comment_category.comment_id')
-                    ->where('comments_service.sn_service', request()->filter['service_id']);;
+                    ->where('comments_service.sn_service', request()->filter['service_id']);
             })
             ->join('comment_topic', 'comment_topic.comment_id', '=', 'comment_category.comment_id')
             ->join('comments_topics', 'comments_topics.t_id', '=', 'comment_topic.topic_id')

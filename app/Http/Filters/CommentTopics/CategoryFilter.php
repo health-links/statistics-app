@@ -14,7 +14,8 @@ class CategoryFilter implements Filter
         } else {
             $query->whereHas('comments', function ($q) use ($value) {
                  $q->whereHas('categories', function ($q) use ($value) {
-                     $q->where('c_id', $value);
+
+                    $q->where('c_id', $value);
                 });
             });
         }

@@ -26,4 +26,20 @@ class CommentTopics extends Model
         return $this->comments()->wherePivot('type', '=', 'positive');
     }
 
+    public function scopeFilterData($query)
+    {
+        $query->where('t_report', '=', '1');
+
+
+        $query->when((request()->filter && request()->filter['category'] !== null), function ($q) {
+            $q->whereHas('comments', function ($q) {
+                return  $q->whereHas('categories', function ($q) {
+                    return $q->where('c_id', '=', request()->filter['category']);
+                });
+            });
+        });
+
+        return $query;
+    }
+
 }
