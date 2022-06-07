@@ -102,7 +102,13 @@ class HomeController extends Controller
 
     public function getTopicsData()
     {
-        $topics = (new CommentTopicsFilter())->whereHas('comments')->withCount('negative', 'positive')->get();
+        $topics = (new CommentTopicsFilter())->join('comment_topic', 'comment_topic.topic_id', '=', 'comments_topics.t_id')
+            ->select('comment_topic.topic_id', 'comments_topics.t_name','comment_topic.type')
+            ->selectRaw("count(CASE when comment_topic.type = 'positive' THEN 1 END) AS positive_count")
+            ->selectRaw("count(CASE when comment_topic.type = 'negative' THEN 1 END) AS negative_count")
+            ->groupBy('comment_topic.topic_id', 'comments_topics.t_name')
+            ->get();
+        // $topics = (new CommentTopicsFilter())->whereHas('comments')->withCount('negative', 'positive')->get();
         $topicPositive = $topics->pluck('positive_count')->toArray();
         $topicNegative = $topics->pluck('negative_count')->toArray();
 
@@ -134,7 +140,17 @@ class HomeController extends Controller
 
     private function getCategoriesData()
     {
-        $categories = HelperController::getCommentCategory()->whereHas('comments')->select()->withCount(['negative', 'positive', 'neutral'])->get();
+        $categories = HelperController::getCommentCategory()
+            ->join('comment_category', 'comment_category.category_id', '=', 'comments_categories.c_id')
+            ->join('comments_api', 'comments_api.sn_id', '=', 'comment_category.comment_id')
+            ->select('comment_category.category_id', 'comments_categories.c_name as c_name', 'comments_api.sn_id')
+            ->selectRaw("count(CASE WHEN comments_api.sn_id = comment_category.comment_id and comments_api.r_rate = 'positive' THEN 1 END) AS positive_count")
+            ->selectRaw("count(CASE WHEN comments_api.sn_id = comment_category.comment_id and comments_api.r_rate = 'negative' THEN 1 END) AS negative_count")
+            ->selectRaw("count(CASE WHEN comments_api.sn_id = comment_category.comment_id and comments_api.r_rate = 'neutral' THEN 1 END) AS neutral_count")
+            ->groupBy('comments_categories.c_id', 'comments_categories.c_name')
+            ->get();
+        // dd($categories);
+        // $categories = HelperController::getCommentCategory()->whereHas('comments')->select()->withCount(['negative', 'positive', 'neutral'])->get();
         $categoryChartData = [
             'positive' => [
                 'data' => $categories->pluck('positive_count')->toArray(),
@@ -149,7 +165,7 @@ class HomeController extends Controller
                 'name' =>   $categories->pluck('c_name')->toArray()
             ]
         ];
-
+        // dd($categoryChartData);
         return ['categoryChartData' => $categoryChartData, 'categories' => $categories];
     }
 
