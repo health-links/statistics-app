@@ -6,9 +6,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\HelperController;
-use App\Http\Filters\CommentApi\CommentApiFilter;
 use App\Http\Filters\CommentTopics\CommentTopicsFilter;
-use App\Http\Filters\CommentCategory\CommentCategoryFilter;
 
 class HomeController extends Controller
 {
@@ -40,10 +38,8 @@ class HomeController extends Controller
         $topicPositive = $topicsData['topicPositive'];
         $topicNegative = $topicsData['topicNegative'];
 
-
         // heatmap Data
         $heatmapData = $this->getHeatMapData();
-
         // data for filters
         $colors = HelperController::getColors();
         $clients = DB::table('clients')->select('c_id', 'c_acronym')->get();
@@ -51,18 +47,15 @@ class HomeController extends Controller
         return view('home', compact('overAllComments', 'chunksCount', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'colors', 'clients', 'services', 'categoryChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories', 'heatmapData'));
     }
 
-
-
     public function getDataYearly()
     {
-
         $start_year = Carbon::now()->subYears(3);
         $end_year = Carbon::now();
         $period = collect(CarbonPeriod::create($start_year, '1 year', $end_year))->map(function ($date) {
             return $date->format('Y');
         })->toArray();
 
-        $commentsYearly = $this->filterData()->whereBetween('sn_amenddate', [$start_year, $end_year])
+        $commentsYearly = HelperController::getCommentApi()->whereBetween('sn_amenddate', [$start_year, $end_year])
             ->select(DB::raw('sn_year as year'), 'r_rate', DB::raw('count(*) as count'))
             ->where('r_rate', '!=', 'mixed')
             ->groupBy('year', 'r_rate')
@@ -79,7 +72,7 @@ class HomeController extends Controller
         $period = collect(CarbonPeriod::create($start_date, '1 month', $end_date))->map(function ($date) {
             return $date->format('Y-m-d');
         })->toArray();
-        $commentsMonthly = $this->filterData()->whereBetween('sn_amenddate', [$start_date, $end_date])
+        $commentsMonthly = HelperController::getCommentApi()->whereBetween('sn_amenddate', [$start_date, $end_date])
             ->select(DB::raw('sn_year as year'), DB::raw('sn_month as month'), 'r_rate', DB::raw('count(*) as count'))
             ->where('r_rate', '!=', 'mixed')
             ->orderBy('month', 'asc')
@@ -97,7 +90,7 @@ class HomeController extends Controller
             return $date->format('Y-m-d');
         })->toArray();
 
-        $commentsQuarterly = $this->filterData()->whereBetween('sn_amenddate', [$start_quarter, $end_quarter])
+        $commentsQuarterly = HelperController::getCommentApi()->whereBetween('sn_amenddate', [$start_quarter, $end_quarter])
             ->select(DB::raw('sn_year as year'), DB::raw('sn_quarter as quarter'), 'r_rate', DB::raw('count(*) as count'))
             ->where('r_rate', '!=', 'mixed')
             ->orderBy('quarter', 'asc')
@@ -119,15 +112,10 @@ class HomeController extends Controller
             'topicNegative' => $topicNegative
         ];
     }
-    private function filterData()
-    {
-        return (new CommentApiFilter());
-    }
-
 
     private function getOverAllComments()
     {
-        return $this->filterData()
+        return HelperController::getCommentApi()
             ->selectRaw("count(CASE when r_rate = 'positive' THEN 1 END) AS positive")
             ->selectRaw("count(CASE when r_rate = 'negative' THEN 1 END) AS negative")
             ->selectRaw("count(CASE when r_rate = 'neutral' THEN 1 END) AS neutral")
@@ -137,7 +125,7 @@ class HomeController extends Controller
 
     private function getChunksData()
     {
-        return $this->filterData()->join('chunks', 'chunks.sn_id', '=', 'comments_api.sn_id')
+        return HelperController::getCommentApi()->join('chunks', 'chunks.sn_id', '=', 'comments_api.sn_id')
             ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'positive' THEN 1 END) AS positive")
             ->selectRaw("count(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'negative' THEN 1 END) AS negative")
             ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'neutral' THEN 1 END) AS neutral")
@@ -146,7 +134,7 @@ class HomeController extends Controller
 
     private function getCategoriesData()
     {
-        $categories = (new CommentCategoryFilter())->whereHas('comments')->select()->withCount(['negative', 'positive', 'neutral'])->get();
+        $categories = HelperController::getCommentCategory()->whereHas('comments')->select()->withCount(['negative', 'positive', 'neutral'])->get();
         $categoryChartData = [
             'positive' => [
                 'data' => $categories->pluck('positive_count')->toArray(),
@@ -165,11 +153,18 @@ class HomeController extends Controller
         return ['categoryChartData' => $categoryChartData, 'categories' => $categories];
     }
 
-
     public function getHeatMapData()
     {
-        $categories = (new CommentCategoryFilter())
+        $categories = DB::table('comments_categories')
             ->join('comment_category', 'comment_category.category_id', '=', 'comments_categories.c_id')
+            ->when(request()->filter && request()->filter['client_id'], function ($q) {
+                $q->join('comments_api as comments_Client', 'comments_Client.sn_id', '=', 'comment_category.comment_id')
+                    ->where('comments_Client.sn_client', request()->filter['client_id']);;
+            })
+            ->when(request()->filter && request()->filter['service_id'], function ($q) {
+                $q->join('comments_api as comments_service', 'comments_service.sn_id', '=', 'comment_category.comment_id')
+                    ->where('comments_service.sn_service', request()->filter['service_id']);;
+            })
             ->join('comment_topic', 'comment_topic.comment_id', '=', 'comment_category.comment_id')
             ->join('comments_topics', 'comments_topics.t_id', '=', 'comment_topic.topic_id')
             ->select('comments_categories.c_name as category_name', 'comment_category.comment_id', 'comments_topics.t_name as topic_name', 'comment_topic.topic_id', DB::raw('count(comment_topic.topic_id) as count'))
@@ -185,6 +180,7 @@ class HomeController extends Controller
             }
             return $date;
         });
+
         return $date;
 
 
