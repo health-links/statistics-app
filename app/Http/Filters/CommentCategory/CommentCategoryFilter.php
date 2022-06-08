@@ -11,7 +11,7 @@ use App\Http\Filters\CommentCategory\ClientFilter;
 use App\Http\Filters\CommentCategory\ServiceFilter;
 class CommentCategoryFilter extends QueryBuilder
 {
-    // counsturctor
+    // constructor
     public function __construct()
     {
         $data = (new CommentCategory)->query();
