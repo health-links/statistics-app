@@ -21,7 +21,7 @@
                     </div>
                     <div class="d-flex">
                         <div class="mb-1">
-                            <select class="" id="category">
+                            <select class="select2 form-select select2-hidden-accessible" id="category">
                                 <option value="all">Categories</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->category_id }}">{{ $category->c_name }}</option>
