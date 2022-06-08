@@ -22,6 +22,10 @@ class CommentCategoryService
         return $data;
     }
 
+    public function getCategories(){
+        return DB::table('comments_categories')->select('c_id as category_id', 'c_name')->get();
+    }
+
     public function getCategoriesData()
     {
 

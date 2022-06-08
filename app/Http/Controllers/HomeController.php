@@ -32,9 +32,8 @@ class HomeController extends Controller
         $chunksCount = $negativeChunks + $positiveChunks + $neutralChunks;
 
         // column-chart
-        $catsData = $this->getCategoriesData();
-        $categoryChartData = $catsData['categoryChartData'];
-        $categories = $catsData['categories'];
+        $categoryChartData = $this->getCategoriesData();
+        $categories = $this->commentCategoryService->getCategories();
 
         // trend Chart Data
         $trendChartData = $this->getDataMonthly();
@@ -103,7 +102,7 @@ class HomeController extends Controller
             ]
         ];
         // dd($categoryChartData);
-        return ['categoryChartData' => $categoryChartData, 'categories' => $categories];
+        return $categoryChartData;
     }
 
     private function getHeatMapData()
