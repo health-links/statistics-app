@@ -36,10 +36,10 @@ class CommentCategoryService
 
         $categories = $this->getCommentCategory()
             ->when(request()->filter && request()->filter['from'], function ($q) {
-                $q->where('sn_amenddate', '>=', request()->filter['from']);
+                $q->where('comments_api.sn_amenddate', '>=', request()->filter['from']);
             })
             ->when(request()->filter && request()->filter['to'], function ($q) {
-                $q->where('sn_amenddate', '<=', request()->filter['to']);
+                $q->where('comments_api.sn_amenddate', '<=', request()->filter['to']);
             })
             ->select('comment_category.category_id', 'comments_categories.c_name as c_name', 'comments_api.sn_id')
             ->selectRaw("count(CASE WHEN comments_api.sn_id = comment_category.comment_id and comments_api.r_rate = 'positive' THEN 1 END) AS positive_count")
