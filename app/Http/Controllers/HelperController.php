@@ -52,12 +52,14 @@ class HelperController extends Controller
                 }
             } else {
                 if ($type == 'monthly') {
-                    $cat = date('M', mktime(0, 0, 0, $m, 10)) . ' ' . substr($item, -2);
+                    $cat = date('M', mktime(0, 0, 0, $m, 10)) . ' ' . substr($y, -2);
+
                 } elseif ($type == 'quarterly') {
                     $cat = 'Q' . $q . '-' . substr($y, -2);
                 } else {
                     $cat = $item;
                 }
+
                 $trendChartData['neutral']['color'] =  'rgb' . $chartColor['neutral'];
                 $trendChartData['neutral']['data'][] = 0;
                 $trendChartData['neutral']['categories'][] =   $cat;
@@ -71,6 +73,7 @@ class HelperController extends Controller
                 $trendChartData['negative']['categories'][] = $cat;
             }
         }
+
         return $trendChartData;
     }
 
