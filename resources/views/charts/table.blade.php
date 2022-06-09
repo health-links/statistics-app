@@ -149,10 +149,5 @@
                  }
              }
          });
-
-         $("#reload").click(function() {
-             console.log("Reload");
-             table.ajax.reload(null, false);
-         });
      </script>
  @endpush
