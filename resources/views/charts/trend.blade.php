@@ -43,7 +43,7 @@
         var areaChartEl = document.querySelector('#trend-chart'),
             areaChartConfig = {
                 chart: {
-                    height: 400,
+                    height: 300,
                     type: 'area',
                     parentHeightOffset: 0,
                     toolbar: {
