@@ -43,25 +43,25 @@
                                         from: 11,
                                         to: 20,
                                         name: '10-20',
-                                        color: '#36bbc1bf'
+                                        color: '#2facb1'
                                     },
                                     {
                                         from: 21,
                                         to: 30,
                                         name: '20-30',
-                                        color: '#36bbc1db'
+                                        color: '#2ba6ab'
                                     },
                                     {
                                         from: 31,
                                         to: 40,
                                         name: '30-40',
-                                        color: '#3FCCBA'
+                                        color: '#218589'
                                     },
                                     {
                                         from: 41,
                                         to: 50,
                                         name: '40-50',
-                                        color: '#62DCAB'
+                                        color: '#196e71'
                                     },
                                     {
                                         from: 51,

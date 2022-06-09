@@ -1,11 +1,4 @@
-@push('css')
-    <style>
-        .dount {
-            height: 523px !important;
-        }
 
-    </style>
-@endpush
 
     <div class="card earnings-card dount">
         <div class="card-header">
@@ -14,7 +7,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-12 flex">
-                    
+
                     <div id="donut-chart" ></div>
                 </div>
             </div>
@@ -54,7 +47,7 @@
         var donutChartEl = document.querySelector('#donut-chart'),
             donutChartConfig = {
                 chart: {
-                    height: 350,
+                    height: 300,
                     type: 'donut'
                 },
                 legend: {

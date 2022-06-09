@@ -2,7 +2,7 @@
     <div class="card earnings-card">
         <div class="card-header">
             <div class="col-12 revenue-report-wrapper">
-                <div class="d-sm-flex justify-content-between align-items-center mb-3">
+                <div class="d-sm-flex justify-content-between align-items-center">
                     <h6 class="heading-card">Topics</h6>
                     <div class="d-flex align-items-center">
 

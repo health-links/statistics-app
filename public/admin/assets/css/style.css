@@ -15,7 +15,7 @@ body{
   font-family:"Open Sans";
 }
 .card .card-header{
-    padding: 20px 20px;
+    padding: 15px 15px;
 }
 .trendheader{
     display:table!important;
@@ -52,7 +52,7 @@ body .apexcharts-legend-text{
     background:#36bbc1!Important;
 }
 .trendheader{
-    
+
 }
 .customizer .customizer-toggle,.btn-primary{
     background:#36bbc1;
@@ -66,6 +66,14 @@ border: 1px solid #36bbc1!important;color: #36bbc1;
 .btn-check:checked+.btn-outline-primary {
     color: #36bbc1;
     background-color: rgb(54 ,187 ,193,0.2)!important;
+}
+/*
+** start css for dashboard
+*/
+
+
+.card-statistics .statistics-body{
+    padding:  0rem 1rem 0.8rem!important
 }
 
 

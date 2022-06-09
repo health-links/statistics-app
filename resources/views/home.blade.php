@@ -74,6 +74,16 @@
 
                         </div>
                     </div>
+                    <div class="row match-height">
+                        <div class="col-lg-12 col-12">
+
+
+                            <!-- Earnings Card -->
+                            @include('charts.table')
+                            <!--/ Earnings Card -->
+
+                        </div>
+                    </div>
                 </section>
             </div>
         </div>

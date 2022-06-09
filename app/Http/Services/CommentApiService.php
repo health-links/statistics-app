@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services;
 
 use Carbon\Carbon;
@@ -9,9 +10,34 @@ use App\Http\Filters\CommentApi\CommentApiFilter;
 
 class CommentApiService
 {
-    private function getCommentApi(){
+    private function getCommentApi()
+    {
         return (new CommentApiFilter());
+    }
+    public function getComments()
+    {
+        $data = $this->getCommentApi()
+            ->with(['topics', 'categories', 'client'])
+            ->paginate(10);
+            // dd($data);
+        $tableData = [];
+        $data->map(function ($item, $key) use (&$tableData) {
+            $tableData[$key] = [
+                'id' => $item->sn_id,
+                'client' => isset($item->client) ? $item->client->c_acronym : "",
+                'categories' => $item->categories->pluck('c_name')->implode(', '),
+                'comment' => $item->sn_comment,
 
+            ];
+            $item->topics->map(function ($topic) use (&$tableData, $item, $key) {
+                $tableData[$key]['topics'][] = [
+                    't_id' => $topic->t_id,
+                    't_name' => $topic->t_name,
+                    't_type' => $topic->pivot->type
+                ];
+            });
+        });
+        return ['data' => $tableData];
     }
     public function getOverAllComments()
     {
@@ -26,12 +52,12 @@ class CommentApiService
     public function getChunksData()
     {
         return $this->getCommentApi()->join('chunks', 'chunks.sn_id', '=', 'comments_api.sn_id')
-        ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'positive' THEN 1 END) AS positive")
-        ->selectRaw("count(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'negative' THEN 1 END) AS negative")
-        ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'neutral' THEN 1 END) AS neutral")
-        ->first();
+            ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'positive' THEN 1 END) AS positive")
+            ->selectRaw("count(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'negative' THEN 1 END) AS negative")
+            ->selectRaw("COUNT(CASE WHEN comments_api.sn_id = chunks.sn_id and chunks.ch_rate = 'neutral' THEN 1 END) AS neutral")
+            ->first();
     }
-  public function getDataMonthly()
+    public function getDataMonthly()
     {
         $start_date = Carbon::now()->subMonth(11);
         $end_date = Carbon::now();
@@ -81,9 +107,4 @@ class CommentApiService
 
         return $trendChartData;
     }
-
-
-
-
-
 }

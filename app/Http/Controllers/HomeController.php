@@ -43,6 +43,8 @@ class HomeController extends Controller
         $topics = $topicsData['topics'];
         $topicPositive = $topicsData['topicPositive'];
         $topicNegative = $topicsData['topicNegative'];
+        // dd($this->commentService->getComments()[0]);
+
 
         // heatmap Data
         $heatmapData = $this->getHeatMapData();
@@ -119,5 +121,11 @@ class HomeController extends Controller
         });
 
         return $date;
+    }
+
+    public function getComments()
+    {
+
+        return $this->commentService->getComments();
     }
 }

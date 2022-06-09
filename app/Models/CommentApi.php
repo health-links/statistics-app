@@ -12,6 +12,10 @@ class CommentApi extends Model
     protected $primaryKey = 'sn_id';
 
 
+    public function client(){
+        return $this->belongsTo(Client::class, 'sn_client', 'c_id');
+    }
+
     public function categories()
     {
         return $this->belongsToMany(CommentCategory::class, 'comment_category', 'comment_id', 'category_id');
@@ -19,7 +23,16 @@ class CommentApi extends Model
 
     public function topics()
     {
-        return $this->belongsToMany(CommentTopics::class, 'comment_topic', 'comment_id', 'topic_id')->withPivot('type');
+        return $this->belongsToMany(CommentTopics::class, 'comment_topic', 'comment_id', 'topic_id')
+        ->withPivot('type');
+    }
+
+    public function positive(){
+        return $this->topics()->wherePivot('type', 'positive');
+    }
+
+    public function neg(){
+        return $this->topics()->wherePivot('type', 'negative');
     }
 
     // chuncks
