@@ -1,18 +1,16 @@
+<div class="card earnings-card dount">
+    <div class="card-header">
+        <h6>Chunks Pie Chart</h6>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 flex">
 
-
-    <div class="card earnings-card dount">
-        <div class="card-header">
-                        <h6>Chunks Pie Chart</h6>
-                    </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-12 flex">
-
-                    <div id="donut-chart" ></div>
-                </div>
+                <div id="donut-chart"></div>
             </div>
         </div>
     </div>
+</div>
 
 @push('js')
     <script>
@@ -59,7 +57,7 @@
                     {{ $neutralChunks ?? 0 }},
 
                 ],
-                colors: [$negativeChunks, $positiveChunks,  $neutralChunks],
+                colors: [$negativeChunks, $positiveChunks, $neutralChunks],
                 dataLabels: {
                     enabled: true,
                     formatter: function(val, opt) {
@@ -79,7 +77,8 @@
                                     fontSize: '1rem',
                                     fontFamily: 'Montserrat',
                                     formatter: function(val) {
-                                        return round10({{ $chunksCount > 0 }} ? val / {{ $chunksCount }} * 100 : 0, -
+                                        return round10({{ $chunksCount > 0 }} ? val / {{ $chunksCount }} * 100 : 0,
+                                            -
                                             1) + '%';
 
                                     }

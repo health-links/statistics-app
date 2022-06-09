@@ -4,22 +4,24 @@ namespace App\Http\Services;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\HelperController;
+use Symfony\Component\Console\Input\Input;
 use App\Http\Filters\CommentApi\CommentApiFilter;
 
 class CommentApiService
 {
     private function getCommentApi()
     {
+
         return (new CommentApiFilter());
     }
     public function getComments()
     {
         $data = $this->getCommentApi()
             ->with(['topics', 'categories', 'client'])
-            ->paginate(10);
-            // dd($data);
+            ->paginate(100);
         $tableData = [];
         $data->map(function ($item, $key) use (&$tableData) {
             $tableData[$key] = [
