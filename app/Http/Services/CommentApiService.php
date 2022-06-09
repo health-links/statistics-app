@@ -21,6 +21,7 @@ class CommentApiService
     {
         $data = $this->getCommentApi()
             ->with(['topics', 'categories', 'client'])
+            ->latest('sn_amenddate')
             ->paginate(100);
         $tableData = [];
         $data->map(function ($item, $key) use (&$tableData) {
