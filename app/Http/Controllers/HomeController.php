@@ -43,8 +43,6 @@ class HomeController extends Controller
         $topics = $topicsData['topics'];
         $topicPositive = $topicsData['topicPositive'];
         $topicNegative = $topicsData['topicNegative'];
-        // dd($this->commentService->getComments()[0]);
-
 
         // heatmap Data
         $heatmapData = $this->getHeatMapData();
