@@ -27,6 +27,8 @@ class CommentApiService
                 'client' => isset($item->client) ? $item->client->c_acronym : "",
                 'categories' => $item->categories->pluck('c_name')->implode(', '),
                 'comment' => $item->sn_comment,
+                'flag' => $item->flagged,
+                'bookmark' => $item->bookmarked,
 
             ];
             $item->topics->map(function ($topic) use (&$tableData, $item, $key) {
@@ -42,7 +44,7 @@ class CommentApiService
     public function getCommentsTypes()
     {
         $data = $this->getCommentApi()
-            ->where('r_rate',request()->type)
+            ->where('r_rate', request()->type)
             ->with(['topics', 'categories', 'client'])
             ->latest('sn_amenddate')
             ->paginate(100);
@@ -50,10 +52,11 @@ class CommentApiService
         $data->map(function ($item, $key) use (&$tableData) {
             $tableData[$key] = [
                 'id' => $item->sn_id,
-                'r_rate'=>$item->r_rate,
+                'r_rate' => $item->r_rate,
                 'client' => isset($item->client) ? $item->client->c_acronym : "",
                 'categories' => $item->categories->pluck('c_name')->implode(', '),
                 'comment' => $item->sn_comment,
+
 
             ];
             $item->topics->map(function ($topic) use (&$tableData, $item, $key) {
@@ -64,8 +67,17 @@ class CommentApiService
                 ];
             });
         });
-        // dd($tableData);
         return ['data' => $tableData];
+    }
+    public function getCommentsChunks()
+    {
+        $data = $this->getCommentApi()
+            ->join('chunks', 'chunks.sn_id', '=', 'comments_api.sn_id')
+            ->select('comments_api.*', 'chunks.ch_id', 'chunks.ch_rate')
+            ->where('chunks.ch_rate', request()->type)
+            ->groupBy('chunks.ch_rate', 'chunks.ch_id')
+            ->get();
+        return ['data'=>$data];
     }
 
     public function getOverAllComments()
@@ -135,5 +147,21 @@ class CommentApiService
         $trendChartData = HelperController::trendHandelArr('yearly', $period, $commentsYearly);
 
         return $trendChartData;
+    }
+
+
+    public function updateFlag()
+    {
+        $comment = $this->getCommentApi()->findOrFail(request()->id);
+        $comment->flagged = !$comment->flagged;
+        $comment->save();
+        return response()->json(["status"=>'success','message'=>'Comment flagged successfully']);
+    }
+    public function updateBookmark()
+    {
+        $comment = $this->getCommentApi()->findOrFail(request()->id);
+        $comment->bookmarked = !$comment->bookmarked;
+        $comment->save();
+        return response()->json(["status" => 'success','message'=>'Bookmark updated']);
     }
 }

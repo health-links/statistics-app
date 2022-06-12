@@ -45,7 +45,7 @@
                         </div>
                     </div>
                     <div class="row match-height">
-                        <div class="col-lg-12 col-12">
+                        <div class="col-lg-6 col-12">
 
 
                             <!-- Earnings Card -->

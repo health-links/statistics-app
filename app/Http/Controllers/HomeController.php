@@ -130,4 +130,9 @@ class HomeController extends Controller
     {
         return $this->commentService->getCommentsTypes();
     }
+
+    public function getCommentsChunks()
+    {
+        return $this->commentService->getCommentsChunks();
+    }
 }

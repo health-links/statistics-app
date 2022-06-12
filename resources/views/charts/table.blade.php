@@ -5,12 +5,11 @@
                  <table class="datatables-basic2 table" id="comment_table">
                      <thead>
                          <tr>
-                             <th>id</th>
                              <th>Comment</th>
-                             <th>Topics</th>
+                             <th>Insights</th>
                              <th>Categories</th>
                              <th>Bookmark Icon</th>
-
+                             <th>Flag Icon</th>
                          </tr>
                      </thead>
                  </table>
@@ -39,9 +38,6 @@
                  "type": "GET"
              },
              columns: [{
-                     data: 'id'
-                 },
-                 {
                      data: 'comment'
                  },
                  {
@@ -51,11 +47,14 @@
                      data: 'categories'
                  },
                  {
-                     data: 'client'
+                     data: ''
+                 },
+                 {
+                     data: ''
                  },
              ],
              columnDefs: [{
-                     targets: [2],
+                     targets: [1],
                      render: function(data, type, row, meta) {
                          var topics = row.topics;
                          var html = '';
@@ -63,6 +62,43 @@
                              html = '<b style="color:#333">' + topic.t_name +
                                  '</b>: ' + topic.t_type;
                          })
+                         return html;
+                     },
+                 },
+                 {
+                     targets: [-2],
+                     title: 'Bookmark Icon',
+                     render: function(data, type, row, meta) {
+                         var html = '';
+                         if (row.bookmark == 0) {
+                             html = "<a  href='javascript:void(0)'" + "onClick='updateBookmark(" + row.id +
+                                 ")'>" + feather.icons[
+                                     'bookmark'].toSvg({
+                                     class: 'font-small-4 me-50'
+                                 }) + "</a>";
+
+                         } else {
+                             html = "<a  href='javascript:void(0)'" + "onClick='updateBookmark(" + row.id +
+                                 ")'><i class='fa-solid fa-bookmark'></i></a>";
+                         }
+                         return html;
+                     },
+                 },
+                 {
+                     targets: [-1],
+                     render: function(data, type, row, meta) {
+
+                         var html = '';
+                         if (row.flag == 0) {
+                             html = "<a  href='javascript:void(0)'" + "onClick='updateFlag(" + row.id +
+                                 ")'>" + feather.icons[
+                                     'flag'].toSvg({
+                                     class: 'font-small-4 me-50'
+                                 }) + "</a>";
+                         } else {
+                             html = "<a  href='javascript:void(0)'" + "onClick='updateFlag(" + row.id +
+                                 ")'><i class='fa-solid fa-flag'></i></a>";
+                         }
                          return html;
                      },
                  }
@@ -149,5 +185,57 @@
                  }
              }
          });
+
+
+         function updateBookmark(id) {
+             var url = "{{ route('comments.updateBookmark') }}";
+             $.ajaxSetup({
+                 headers: {
+                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                 }
+             });
+             $.ajax({
+                 url: url,
+                 type: "POST",
+                 data: {
+                     id: id
+                 },
+                 success: function(data) {
+                     console.log(data);
+                     if (data.status == 'success') {
+                         toastr.success(data.message);
+                         $('#comment_table').DataTable().ajax.reload();
+                     } else {
+                         toastr.error(data.message);
+                     }
+                 }
+             });
+         }
+
+         function updateFlag(id) {
+             var url = "{{ route('comments.updateFlag') }}";
+             var data = {
+                 id: id
+             };
+             $.ajaxSetup({
+                 headers: {
+                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                 }
+             });
+             $.ajax({
+                 url: url,
+                 type: "POST",
+                 data: data,
+                 success: function(data) {
+                     console.log(data);
+                     if (data.status == 'success') {
+                         toastr.success(data.message);
+                         $('#comment_table').DataTable().ajax.reload();
+                     } else {
+                         toastr.error(data.message);
+                     }
+                 }
+             });
+         }
      </script>
  @endpush
