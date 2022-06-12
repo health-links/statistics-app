@@ -46,7 +46,6 @@
                                         <table class="datatables-basic2 table" id="trend_comments">
                                             <thead>
                                                 <tr>
-                                                    <th>id</th>
                                                     <th>Comment</th>
                                                     <th>Comment Rate</th>
                                                     <th>Month</th>
@@ -114,9 +113,7 @@
                                         period: $period
                                     }
                                 },
-                                columns: [{
-                                        data: 'sn_id'
-                                    },
+                                columns: [
                                     {
                                         data: 'sn_comment'
                                     },

@@ -75,7 +75,7 @@
                                         <table class="datatables-basic2 table" id="comment_type">
                                             <thead>
                                                 <tr>
-                                                    <th>id</th>
+
                                                     <th>Comment</th>
                                                     <th>Rate</th>
                                                     <th>Topics</th>
@@ -121,9 +121,7 @@
                             type: type
                         }
                     },
-                    columns: [{
-                            data: 'id'
-                        },
+                    columns: [
                         {
                             data: 'comment'
                         },
@@ -141,7 +139,7 @@
                         },
                     ],
                     columnDefs: [{
-                            targets: [3],
+                            targets: [2],
                             render: function(data, type, row, meta) {
                                 var topics = row.topics;
                                 var html = '';

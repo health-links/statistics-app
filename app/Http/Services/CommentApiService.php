@@ -139,7 +139,7 @@ class CommentApiService
             ->where('r_rate', request()->type)
             ->with(['topics', 'categories', 'client'])
             ->latest('sn_amenddate')
-            ->paginate(100);
+            ->get();
         $tableData = [];
         $data->map(function ($item, $key) use (&$tableData) {
             $tableData[$key] = [
