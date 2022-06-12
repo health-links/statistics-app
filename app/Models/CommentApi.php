@@ -10,7 +10,9 @@ class CommentApi extends Model
     use HasFactory;
     protected $table = 'comments_api';
     protected $primaryKey = 'sn_id';
-
+    // guarded
+    protected $guarded = [];
+    public $timestamps = false;
 
     public function client(){
         return $this->belongsTo(Client::class, 'sn_client', 'c_id');

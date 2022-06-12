@@ -48,6 +48,15 @@
                     parentHeightOffset: 0,
                     toolbar: {
                         show: false
+                    },
+                    events:{
+                         markerClick: (event, chartContext, config) => {
+                            console.log(event);
+                            console.log(chartContext);
+                            console.log(config);
+
+                         }
+
                     }
                 },
                 dataLabels: {
@@ -109,8 +118,6 @@
                     }
                 }
             };
-
-
         if (typeof areaChartEl !== undefined && areaChartEl !== null) {
             var areaChart = new ApexCharts(areaChartEl, areaChartConfig);
             areaChart.render();

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentApiController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
@@ -25,5 +26,9 @@ Route::get('/quarterly', [HomeController::class, 'getDataQuarterly'])->name('cha
 Route::get('/topics/category', [HomeController::class, 'getTopicsData'])->name('charts.topics.category');
 Route::get('comments', [HomeController::class, 'getComments'])->name('comments.table');
 Route::get('comments/types', [HomeController::class, 'getCommentsTypes'])->name('comments.types');
+Route::get('comments/chunks', [HomeController::class, 'getCommentsChunks'])->name('comments.chunks');
+
+Route::post('comments/updateFlag', [CommentApiController::class, 'updateFlag'])->name('comments.updateFlag');
+Route::post('comments/updateBookmark', [CommentApiController::class, 'updateBookmark'])->name('comments.updateBookmark');
 
 
