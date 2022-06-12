@@ -101,7 +101,6 @@ class HomeController extends Controller
                 'name' =>   $categories->pluck('c_name')->toArray()
             ]
         ];
-        // dd($categoryChartData);
         return $categoryChartData;
     }
 
@@ -121,6 +120,9 @@ class HomeController extends Controller
         return $date;
     }
 
+
+    // tables when click on chart
+
     public function getComments()
     {
 
@@ -134,5 +136,10 @@ class HomeController extends Controller
     public function getCommentsChunks()
     {
         return $this->commentService->getCommentsChunks();
+    }
+
+    public function getCommentsTrend()
+    {
+        return $this->commentService->getCommentsTrend();
     }
 }

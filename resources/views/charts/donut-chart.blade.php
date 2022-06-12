@@ -27,7 +27,7 @@
                                         <table class="datatables-basic2 table" id="chunk_comments">
                                             <thead>
                                                 <tr>
-                                                    <th>id</th>
+
                                                     <th>Comment</th>
                                                     <th>Chunk Rate</th>
                                                 </tr>
@@ -107,9 +107,7 @@
                                         type: types[index]
                                     }
                                 },
-                                columns: [{
-                                        data: 'sn_id'
-                                    },
+                                columns: [
                                     {
                                         data: 'sn_comment'
                                     },
