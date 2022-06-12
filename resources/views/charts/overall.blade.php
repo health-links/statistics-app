@@ -5,7 +5,7 @@
             <div class="avatar bg-light-primary me-2">
                 <div class="avatar-content">
                     <i data-feather="thumbs-down" onclick="getOverall('negative')" data-bs-toggle="modal"
-                        data-bs-target="#pricingModal" class="avatar-icon"></i>
+                        data-bs-target="#overallModal" class="avatar-icon"></i>
                 </div>
             </div>
             <div class="my-auto">
@@ -18,7 +18,8 @@
         <div class="d-flex flex-row">
             <div class="avatar bg-light-info me-2">
                 <div class="avatar-content">
-                    <i data-feather="smile" class="avatar-icon"></i>
+                    <i data-feather="smile" onclick="getOverall('positive')" data-bs-toggle="modal"
+                        data-bs-target="#overallModal" class="avatar-icon"></i>
                 </div>
             </div>
             <div class="my-auto">
@@ -31,7 +32,8 @@
         <div class="d-flex flex-row">
             <div class="avatar bg-light-danger me-2">
                 <div class="avatar-content">
-                    <i data-feather="meh" class="avatar-icon"></i>
+                    <i data-feather="meh" onclick="getOverall('neutral')" data-bs-toggle="modal"
+                        data-bs-target="#overallModal" class="avatar-icon"></i>
                 </div>
             </div>
             <div class="my-auto">
@@ -44,7 +46,8 @@
         <div class="d-flex flex-row">
             <div class="avatar bg-light-success me-2">
                 <div class="avatar-content">
-                    <i data-feather="bar-chart-2" class="avatar-icon"></i>
+                    <i data-feather="bar-chart-2" onclick="getOverall('mixed')" data-bs-toggle="modal"
+                        data-bs-target="#overallModal" class="avatar-icon"></i>
                 </div>
             </div>
             <div class="my-auto">
@@ -55,7 +58,7 @@
     </div>
 </div>
 
-<div class="modal fade show" id="pricingModal" tabindex="-1" aria-labelledby="pricingModalTitle" aria-modal="true"
+<div class="modal fade show" id="overallModal" tabindex="-1" aria-labelledby="overallModalTitle" aria-modal="true"
     role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
@@ -109,6 +112,7 @@
                     url = "{{ route('comments.types') }}";
                 }
                 var comment_table = $('#comment_type')
+                 comment_table.DataTable().destroy();
                 var table = comment_table.DataTable({
                     "ajax": {
                         "url": url,

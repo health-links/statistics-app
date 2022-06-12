@@ -20,6 +20,7 @@ class HelperController extends Controller
     }
     public static function trendHandelArr($type, $period, $data)
     {
+
         $chartColor = collect(self::getColors())->toArray();
         $trendChartData = [];
         foreach ($period as $item) {
@@ -31,13 +32,14 @@ class HelperController extends Controller
                 $q = Carbon::parse($item)->quarter;
                 $y = Carbon::parse($item)->year;
                 $filterData = $data->where('quarter', '=', $q)->where('year', $y);
-            } else {
-
+            } elseif ($type == 'yearly')  {
                 $filterData = $data->where('year', $item);
             }
 
             if (count($filterData) > 0) {
+
                 foreach ($filterData as $value) {
+
                     if ($type == 'monthly') {
                         $cat = date('M', mktime(0, 0, 0, $value->month, 10)) . ' ' . substr($value->year, -2);
                     } elseif ($type == 'quarterly') {
@@ -51,6 +53,7 @@ class HelperController extends Controller
                     $trendChartData[$rate]['categories'][] =  $cat;
                 }
             } else {
+
                 if ($type == 'monthly') {
                     $cat = date('M', mktime(0, 0, 0, $m, 10)) . ' ' . substr($y, -2);
 
@@ -71,9 +74,10 @@ class HelperController extends Controller
                 $trendChartData['negative']['color'] =  'rgb' . $chartColor['negative'];
                 $trendChartData['negative']['data'][] = 0;
                 $trendChartData['negative']['categories'][] = $cat;
+
             }
         }
-
+        // dd($trendChartData);
         return $trendChartData;
     }
 

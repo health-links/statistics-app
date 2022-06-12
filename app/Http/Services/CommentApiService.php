@@ -41,44 +41,8 @@ class CommentApiService
         });
         return ['data' => $tableData];
     }
-    public function getCommentsTypes()
-    {
-        $data = $this->getCommentApi()
-            ->where('r_rate', request()->type)
-            ->with(['topics', 'categories', 'client'])
-            ->latest('sn_amenddate')
-            ->paginate(100);
-        $tableData = [];
-        $data->map(function ($item, $key) use (&$tableData) {
-            $tableData[$key] = [
-                'id' => $item->sn_id,
-                'r_rate' => $item->r_rate,
-                'client' => isset($item->client) ? $item->client->c_acronym : "",
-                'categories' => $item->categories->pluck('c_name')->implode(', '),
-                'comment' => $item->sn_comment,
 
 
-            ];
-            $item->topics->map(function ($topic) use (&$tableData, $item, $key) {
-                $tableData[$key]['topics'][] = [
-                    't_id' => $topic->t_id,
-                    't_name' => $topic->t_name,
-                    't_type' => $topic->pivot->type
-                ];
-            });
-        });
-        return ['data' => $tableData];
-    }
-    public function getCommentsChunks()
-    {
-        $data = $this->getCommentApi()
-            ->join('chunks', 'chunks.sn_id', '=', 'comments_api.sn_id')
-            ->select('comments_api.*', 'chunks.ch_id', 'chunks.ch_rate')
-            ->where('chunks.ch_rate', request()->type)
-            ->groupBy('chunks.ch_rate', 'chunks.ch_id')
-            ->get();
-        return ['data'=>$data];
-    }
 
     public function getOverAllComments()
     {
@@ -126,8 +90,9 @@ class CommentApiService
             ->select(DB::raw('sn_year as year'), DB::raw('sn_quarter as quarter'), 'r_rate', DB::raw('count(*) as count'))
             ->where('r_rate', '!=', 'mixed')
             ->orderBy('quarter', 'asc')
-            ->groupBy('year', 'quarter', 'r_rate')
+            ->groupBy('quarter', 'r_rate')
             ->get();
+
         $trendChartData = HelperController::trendHandelArr('quarterly', $period, $commentsQuarterly);
         return $trendChartData;
     }
@@ -163,5 +128,69 @@ class CommentApiService
         $comment->bookmarked = !$comment->bookmarked;
         $comment->save();
         return response()->json(["status" => 'success','message'=>'Bookmark updated']);
+    }
+
+
+    // tables when click on chart
+    //1-overall statistics
+    public function getCommentsTypes()
+    {
+        $data = $this->getCommentApi()
+            ->where('r_rate', request()->type)
+            ->with(['topics', 'categories', 'client'])
+            ->latest('sn_amenddate')
+            ->paginate(100);
+        $tableData = [];
+        $data->map(function ($item, $key) use (&$tableData) {
+            $tableData[$key] = [
+                'id' => $item->sn_id,
+                'r_rate' => $item->r_rate,
+                'client' => isset($item->client) ? $item->client->c_acronym : "",
+                'categories' => $item->categories->pluck('c_name')->implode(', '),
+                'comment' => $item->sn_comment,
+            ];
+            $item->topics->map(function ($topic) use (&$tableData, $item, $key) {
+                $tableData[$key]['topics'][] = [
+                    't_id' => $topic->t_id,
+                    't_name' => $topic->t_name,
+                    't_type' => $topic->pivot->type
+                ];
+            });
+        });
+        return ['data' => $tableData];
+    }
+
+    // 2-catagories statistics
+    public function getCommentsChunks()
+    {
+        $data = $this->getCommentApi()
+            ->join('chunks', 'chunks.sn_id', '=', 'comments_api.sn_id')
+            ->select('comments_api.*', 'chunks.ch_id', 'chunks.ch_rate')
+            ->where('chunks.ch_rate', request()->type)
+            ->groupBy('chunks.ch_rate', 'chunks.ch_id')
+            ->get();
+        return ['data' => $data];
+    }
+
+    // 3-tree statistics
+    public function getCommentsTrend()
+    {
+
+        if(request()->period == 'monthly'){
+            $monthNumber = Carbon::parse(request()->date)->format('m');
+            $month = strrpos($monthNumber, 0) == 0  ? substr($monthNumber, 1) : $monthNumber;
+            $year = Carbon::parse(request()->date)->format('Y');
+            $comments = $this->getCommentApi()->where('sn_month', $month)->where('sn_year', $year)->where('r_rate', request()->type)->get();
+
+        }elseif(request()->period == 'quarterly'){
+            $quarter = substr(strtok(request()->date, '-'),1);
+            $year = '20' . substr(request()->date, strpos(request()->date, "_") +3);
+            $comments = $this->getCommentApi()->where('sn_quarter', $quarter)->where('sn_year', $year)->where('r_rate', request()->type)->get();
+
+        }elseif(request()->period == 'yearly'){
+            $year = Carbon::parse(request()->date)->format('Y');
+            $comments = $this->getCommentApi()->where('sn_year', $year)->where('r_rate', request()->type)->get();
+        }
+        return ['data' => $comments];
     }
 }
