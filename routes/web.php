@@ -24,5 +24,6 @@ Route::get('/monthly', [HomeController::class, 'getDataMonthly'])->name('chart.m
 Route::get('/quarterly', [HomeController::class, 'getDataQuarterly'])->name('chart.quarterly');
 Route::get('/topics/category', [HomeController::class, 'getTopicsData'])->name('charts.topics.category');
 Route::get('comments', [HomeController::class, 'getComments'])->name('comments.table');
+Route::get('comments/types', [HomeController::class, 'getCommentsTypes'])->name('comments.types');
 
 

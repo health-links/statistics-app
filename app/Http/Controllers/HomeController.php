@@ -126,4 +126,8 @@ class HomeController extends Controller
 
         return $this->commentService->getComments();
     }
+    public function getCommentsTypes()
+    {
+        return $this->commentService->getCommentsTypes();
+    }
 }

@@ -4,17 +4,14 @@ namespace App\Http\Services;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\HelperController;
-use Symfony\Component\Console\Input\Input;
 use App\Http\Filters\CommentApi\CommentApiFilter;
 
 class CommentApiService
 {
     private function getCommentApi()
     {
-
         return (new CommentApiFilter());
     }
     public function getComments()
@@ -42,6 +39,35 @@ class CommentApiService
         });
         return ['data' => $tableData];
     }
+    public function getCommentsTypes()
+    {
+        $data = $this->getCommentApi()
+            ->where('r_rate',request()->type)
+            ->with(['topics', 'categories', 'client'])
+            ->latest('sn_amenddate')
+            ->paginate(100);
+        $tableData = [];
+        $data->map(function ($item, $key) use (&$tableData) {
+            $tableData[$key] = [
+                'id' => $item->sn_id,
+                'r_rate'=>$item->r_rate,
+                'client' => isset($item->client) ? $item->client->c_acronym : "",
+                'categories' => $item->categories->pluck('c_name')->implode(', '),
+                'comment' => $item->sn_comment,
+
+            ];
+            $item->topics->map(function ($topic) use (&$tableData, $item, $key) {
+                $tableData[$key]['topics'][] = [
+                    't_id' => $topic->t_id,
+                    't_name' => $topic->t_name,
+                    't_type' => $topic->pivot->type
+                ];
+            });
+        });
+        // dd($tableData);
+        return ['data' => $tableData];
+    }
+
     public function getOverAllComments()
     {
         return $this->getCommentApi()
