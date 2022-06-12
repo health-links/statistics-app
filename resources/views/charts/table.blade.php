@@ -201,7 +201,7 @@
                      id: id
                  },
                  success: function(data) {
-                     console.log(data);
+
                      if (data.status == 'success') {
                          toastr.success(data.message);
                          $('#comment_table').DataTable().ajax.reload();
@@ -227,7 +227,7 @@
                  type: "POST",
                  data: data,
                  success: function(data) {
-                     console.log(data);
+
                      if (data.status == 'success') {
                          toastr.success(data.message);
                          $('#comment_table').DataTable().ajax.reload();
