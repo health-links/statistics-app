@@ -74,7 +74,7 @@
                          if (row.bookmark == 0) {
                              html = "<a  href='javascript:void(0)' id='bookmark-" + row.id +
                                  "'onClick='updateBookmark(" + row.id +
-                                 ")'>" + "<i class='fa-regular fa-bookmark'></i>"+ "</a>" +
+                                 ")'>" + "<i class='fa-regular fa-bookmark'></i>" + "</a>" +
                                  "<span class='spinner-border text-secondary d-none'  role='status'  id='bookspinner-" +
                                  row.id +
                                  "'>" + "</span>";
