@@ -219,8 +219,8 @@
                      if (data.status == 'success') {
                          toastr.success(data.message);
                          $('#bookmark-' + id).removeClass('d-none');
-                         $('#bookspinner-' + id).addClass('d-none');
                          $('#comment_table').DataTable().ajax.reload();
+                         $('#bookspinner-' + id).addClass('d-none');
 
                      } else {
                          toastr.error(data.message);
@@ -252,8 +252,8 @@
                      if (data.status == 'success') {
                          toastr.success(data.message);
                          $('#flag-' + id).removeClass('d-none');
-                         $('#flagspinner-' + id).addClass('d-none');
                          $('#comment_table').DataTable().ajax.reload();
+                         $('#flagspinner-' + id).addClass('d-none');
 
                      } else {
                          toastr.error(data.message);
