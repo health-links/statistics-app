@@ -45,7 +45,7 @@
             plotOptions: {
                 bar: {
                     horizontal: true,
-                    barHeight: '100%',
+                    barHeight: '60%',
 
                 },
             },

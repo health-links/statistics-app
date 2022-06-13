@@ -13,8 +13,11 @@ class CommentTopicService
             ->join('comment_topic', 'comment_topic.topic_id', '=', 'comments_topics.t_id')
             ->join('comments_api', 'comments_api.sn_id', '=', 'comment_topic.comment_id')
             ->when(request()->filter && array_key_exists('category', request()->filter), function ($q) {
-                $q->join('comment_category', 'comment_category.comment_id', '=', 'comments_api.sn_id')
-                    ->where('comment_category.category_id', request()->filter['category']);
+                if (request()->filter['category'] != 'all') {
+                    $q->join('comment_category as category', 'category.comment_id', '=', 'comments_api.sn_id')
+                        ->where('category.category_id', request()->filter['category']);
+                }
+                $q->join('comment_category', 'comment_category.comment_id', '=', 'comments_api.sn_id');
             })
             ->when(request()->filter && array_key_exists('client_id', request()->filter) && request()->filter['client_id'] !== null, function ($q) {
                 $q->where('comments_api.sn_client', request()->filter['client_id']);

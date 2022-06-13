@@ -1,6 +1,7 @@
  <section id="basic-datatable">
      <div class="row">
          <div class="col-12">
+
              <div class="card">
                  <table class="datatables-basic2 table" id="comment_table">
                      <thead>
@@ -71,15 +72,21 @@
                      render: function(data, type, row, meta) {
                          var html = '';
                          if (row.bookmark == 0) {
-                             html = "<a  href='javascript:void(0)'" + "onClick='updateBookmark(" + row.id +
-                                 ")'>" + feather.icons[
-                                     'bookmark'].toSvg({
-                                     class: 'font-small-4 me-50'
-                                 }) + "</a>";
+                             html = "<a  href='javascript:void(0)' id='bookmark-" + row.id +
+                                 "'onClick='updateBookmark(" + row.id +
+                                 ")'>" + "<i class='fa-regular fa-bookmark'></i>"+ "</a>" +
+                                 "<span class='spinner-border text-secondary d-none'  role='status'  id='bookspinner-" +
+                                 row.id +
+                                 "'>" + "</span>";
 
                          } else {
-                             html = "<a  href='javascript:void(0)'" + "onClick='updateBookmark(" + row.id +
-                                 ")'><i class='fa-solid fa-bookmark'></i></a>";
+                             html = "<a  href='javascript:void(0)' disabled id='bookmark-" + row.id +
+                                 "'onClick='updateBookmark(" + row.id +
+                                 ")'><i class='fa-solid fa-bookmark'></i></a>" +
+                                 "<span class='spinner-border text-secondary d-none'  role='status'  id='bookspinner-" +
+                                 row.id +
+                                 "'>" + "</span>";
+
                          }
                          return html;
                      },
@@ -90,14 +97,19 @@
 
                          var html = '';
                          if (row.flag == 0) {
-                             html = "<a  href='javascript:void(0)'" + "onClick='updateFlag(" + row.id +
-                                 ")'>" + feather.icons[
-                                     'flag'].toSvg({
-                                     class: 'font-small-4 me-50'
-                                 }) + "</a>";
+                             html = "<a  href='javascript:void(0)' id='flag-" + row.id +
+                                 "'onClick='updateFlag(" + row.id +
+                                 ")'>" + "<i class='fa-regular fa-flag'></i>" + "</a>" +
+                                 "<span class='spinner-border text-secondary d-none'  role='status'  id='flagspinner-" +
+                                 row.id +
+                                 "'>" + "</span>";
                          } else {
-                             html = "<a  href='javascript:void(0)'" + "onClick='updateFlag(" + row.id +
-                                 ")'><i class='fa-solid fa-flag'></i></a>";
+                             html = "<a  href='javascript:void(0)' disabled id='flag-" + row.id +
+                                 "'onClick='updateFlag(" + row.id +
+                                 ")'><i class='fa-solid fa-flag'></i></a>" +
+                                 "<span class='spinner-border text-secondary d-none'  role='status'  id='flagspinner-" +
+                                 row.id +
+                                 "'>" + "</span>";
                          }
                          return html;
                      },
@@ -188,6 +200,8 @@
 
 
          function updateBookmark(id) {
+             $('#bookmark-' + id).addClass('d-none');
+             $('#bookspinner-' + id).removeClass('d-none');
              var url = "{{ route('comments.updateBookmark') }}";
              $.ajaxSetup({
                  headers: {
@@ -205,14 +219,22 @@
                      if (data.status == 'success') {
                          toastr.success(data.message);
                          $('#comment_table').DataTable().ajax.reload();
+                         $('#bookmark-' + id).removeClass('d-none');
+                         $('#bookspinner-' + id).addClass('d-none');
+
                      } else {
                          toastr.error(data.message);
+                         $('#bookmark-' + id).removeClass('d-none');
+                         $('#bookspinner-' + id).addClass('d-none');
                      }
                  }
              });
          }
 
          function updateFlag(id) {
+
+             $('#flag-' + id).addClass('d-none');
+             $('#flagspinner-' + id).removeClass('d-none');
              var url = "{{ route('comments.updateFlag') }}";
              var data = {
                  id: id
@@ -227,12 +249,16 @@
                  type: "POST",
                  data: data,
                  success: function(data) {
-
                      if (data.status == 'success') {
                          toastr.success(data.message);
                          $('#comment_table').DataTable().ajax.reload();
+                         $('#flag-' + id).removeClass('d-none');
+                         $('#flagspinner-' + id).addClass('d-none');
+
                      } else {
                          toastr.error(data.message);
+                         $('#flag-' + id).removeClass('d-none');
+                         $('#flagspinner-' + id).addClass('d-none');
                      }
                  }
              });

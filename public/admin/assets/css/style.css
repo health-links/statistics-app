@@ -9,78 +9,99 @@ NOTE:
 ------
 PLACE HERE YOUR OWN SCSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
 WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap");
 
-body{
-  font-family:"Open Sans";
+body {
+    font-family: "Open Sans";
 }
-.card .card-header{
+.card .card-header {
     padding: 15px 15px;
 }
-.trendheader{
-    display:table!important;
+.trendheader {
+    display: table !important;
 }
-.trendheader h6,.trendheader .btnsWrap{
-    display:table-cell!important;
+.trendheader h6,
+.trendheader .btnsWrap {
+    display: table-cell !important;
 }
-.trendheader .btnsWrap{
-    float:right!Important;
+.trendheader .btnsWrap {
+    float: right !important;
 }
-.btnsWrap .btn{
-        font-weight: 600;
+.btnsWrap .btn {
+    font-weight: 600;
     font-size: 13px;
-    cursor:pointer;
+    cursor: pointer;
 }
-.card .card-header h6{
-    padding:0!important;
-    font-size:13px!important;
-    font-weight: 700!important;;
+.card .card-header h6 {
+    padding: 0 !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
     text-transform: uppercase;
 }
-body .apexcharts-legend-text{
-    font-size:12px!important;
-     font-family:"Open Sans"!important;
-        font-weight: 600!important;;
-        text-transform:capitalize;
+body .apexcharts-legend-text {
+    font-size: 12px !important;
+    font-family: "Open Sans" !important;
+    font-weight: 600 !important;
+    text-transform: capitalize;
 }
-.main-menu.menu-light .navigation>li{
-    font-size:12px!Important;
-    font-weight:600!important;
-    text-transform:uppercase;
+.main-menu.menu-light .navigation > li {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
 }
-.menu-content li.active{
-    background:#36bbc1!Important;
+.menu-content li.active {
+    background: #36bbc1 !important;
 }
-.trendheader{
-
+.trendheader {
 }
-.customizer .customizer-toggle,.btn-primary{
-    background:#36bbc1;
+.customizer .customizer-toggle,
+.btn-primary {
+    background: #36bbc1;
 }
-.btn-outline-primary{
-border: 1px solid #36bbc1!important;color: #36bbc1;
+.btn-outline-primary {
+    border: 1px solid #36bbc1 !important;
+    color: #36bbc1;
 }
 .btn-outline-primary:hover:not(.disabled):not(:disabled) {
     color: #36bbc1;
 }
-.btn-check:checked+.btn-outline-primary {
+.btn-check:checked + .btn-outline-primary {
     color: #36bbc1;
-    background-color: rgb(54 ,187 ,193,0.2)!important;
+    background-color: rgb(54, 187, 193, 0.2) !important;
 }
 /*
 ** start css for dashboard
 */
 
-
-.card-statistics .statistics-body{
-    padding:  0rem 1rem 0.8rem!important
+.card-statistics .statistics-body {
+    padding: 0rem 1rem 0.8rem !important;
 }
 
+table td,
+table th {
+    font-size: 11px !important;
+}
+select[name="comment_table_length"],
+div.dataTables_filter input {
+    background-color: #fafafa;
+    height: 28px;
+    font-size: 12px;
+    line-height: 9px;
+    /* border-radius: 0; */
+    border-left-width: 2px;
+    width: 50px;
+}
+div.dataTables_length label,
+div.dataTables_filter label {
+    font-size: 11px;
+    font-weight: bold !important;
+}
+div.dataTables_info,
+.page-item .page-link {
+    font-size: 11px;
+}
 
-
-
-
-
-
-
-
+table .spinner-border{
+    width: 1rem !important;
+    height: 1rem !important;
+}
