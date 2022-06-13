@@ -4,20 +4,11 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Http\Filters\CommentApi\CommentApiFilter;
-use App\Http\Filters\CommentCategory\CommentCategoryFilter;
+
 
 class HelperController extends Controller
 {
-    public static function getCommentApi()
-    {
-        return (new CommentApiFilter());
-    }
 
-    public static function getCommentCategory()
-    {
-        return (new CommentCategoryFilter());
-    }
     public static function trendHandelArr($type, $period, $data)
     {
 
