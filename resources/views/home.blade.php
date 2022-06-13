@@ -29,7 +29,7 @@
                         <!--/ Statistics Card -->
                     </div>
                     <div class="row match-height parent">
-                        <div class="col-lg-6 col-12">
+                        <div class="col-lg-4 col-12">
 
 
                             <!-- Earnings Card -->
@@ -37,7 +37,7 @@
                             <!--/ Earnings Card -->
 
                         </div>
-                        <div class="col-lg-6 col-12">
+                        <div class="col-lg-8 col-12">
                             <!-- Earnings Card -->
                             @include('charts.trend')
                             <!--/ Earnings Card -->
