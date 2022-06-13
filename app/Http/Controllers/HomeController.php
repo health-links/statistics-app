@@ -142,4 +142,13 @@ class HomeController extends Controller
     {
         return $this->commentService->getCommentsTrend();
     }
+    public function getCommentsCategory()
+    {
+        return $this->commentService->getCommentsCategory();
+    }
+    public function getCommentsTopic()
+    {
+        return $this->commentService->getCommentsTopic();
+    }
+
 }

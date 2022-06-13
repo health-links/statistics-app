@@ -8,6 +8,10 @@ class ClientFilter implements Filter
 {
     public function __invoke(Builder $query, $value, string $property)
     {
-        return $query->where('sn_client', $value);
+        if($value!=='all'){
+
+            return $query->where('sn_client', $value);
+        }
+        return $query;
     }
 }

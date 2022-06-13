@@ -3,7 +3,6 @@
 namespace App\Http\Filters\CommentApi;
 
 use App\Models\CommentApi;
-use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 use App\Http\Filters\CommentApi\ToFilter;
