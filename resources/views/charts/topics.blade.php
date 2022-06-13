@@ -44,6 +44,43 @@
         </div>
     </div>
 </div>
+<div class="modal fade show" id="topicModal" tabindex="-1" aria-labelledby="pricingModalTitle" aria-modal="true"
+    role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-transparent">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-sm-5 mx-50 pb-5">
+                <div id="pricing-plan">
+                    <div class="row pricing-card">
+                        <section id="basic-datatable">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <table class="datatables-basic2 table" id="topic_comments">
+                                            <thead>
+                                                <tr>
+                                                    <th>Comment</th>
+                                                    <th>Comment Rate</th>
+                                                    <th>Month</th>
+                                                    <th>Quarter</th>
+                                                    <th>Year</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @push('js')
     <script>
         var colors = @json($colors);
@@ -61,6 +98,135 @@
                 type: 'bar',
                 toolbar: {
                     show: false
+                },
+                events: {
+                    dataPointSelection: (event, chartContext, config) => {
+
+                        var type = chartContext.w.config.series[config.seriesIndex].name;
+                        var topic = chartContext.w.globals.labels[config.dataPointIndex];
+                        console.log(type, topic);
+                        var query = @json(request()->query());
+                        var $category = $('#category option').filter(':selected').val();
+
+                        var url = '';
+                        if (query.length !== 0 && query.category !== null) {
+                            var filter = query.filter;
+                            if ($category !== 'all') {
+                                var seq =
+                                    `type=${type}&topic=${topic}&filter[client_id]=${filter.client_id}&filter[service_id]=${filter.service_id ??''}&filter[from]=${filter.from??''}&filter[to]=${filter.to??''}&filter[category]=${$category??''}`
+                            } else {
+                                var seq =
+                                    `type=${type}&topic=${topic}&filter[client_id]=${filter.client_id}&filter[service_id]=${filter.service_id ??''}&filter[from]=${filter.from??''}&filter[to]=${filter.to??''}`
+                            }
+                            url = "{{ route('comments.topic') }}" + "?" + seq;
+                        } else if ($category !== null && $category !== 'all') {
+                            url = "{{ route('comments.topic') }}" + "?" +
+                                `type=${type}&topic=${topic}&filter[category]=${$category??''}`;
+                        } else {
+                            url = "{{ route('comments.topic') }}" + "?" + `type=${type}&topic=${topic}`;
+                        }
+                        $('#topic_comments').DataTable().destroy();
+                        $('#topicModal').modal('show');
+                        var comment_table = $('#topic_comments')
+                        var table = comment_table.DataTable({
+                            retrieve: true,
+                            "ajax": {
+                                "url": url,
+                                "type": "GET",
+
+                            },
+                            columns: [{
+                                    data: 'sn_comment'
+                                },
+                                {
+                                    data: 'r_rate'
+                                },
+                                {
+                                    data: 'sn_month'
+                                },
+                                {
+                                    data: 'sn_quarter'
+                                },
+                                {
+                                    data: 'sn_year'
+                                }
+
+                            ],
+                            dom: '<"card-header border-bottom p-1"<"head-label"><"dt-action-buttons text-end"B>><"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+                            displayLength: 10,
+                            lengthMenu: [10, 15, 25, 50, 75, 100],
+                            buttons: [{
+                                    extend: 'collection',
+                                    className: 'btn btn-outline-secondary dropdown-toggle me-2',
+                                    text: feather.icons['share'].toSvg({
+                                        class: 'font-small-4 me-50'
+                                    }) + 'Export',
+                                    buttons: [{
+                                            extend: 'print',
+                                            text: feather.icons['printer'].toSvg({
+                                                class: 'font-small-4 me-50'
+                                            }) + 'Print',
+                                            className: 'dropdown-item',
+                                            exportOptions: {
+                                                columns: [3, 4, 5, 6, 7]
+                                            }
+                                        },
+                                        {
+                                            extend: 'csv',
+                                            text: feather.icons['file-text'].toSvg({
+                                                class: 'font-small-4 me-50'
+                                            }) + 'Csv',
+                                            className: 'dropdown-item',
+                                            exportOptions: {
+                                                columns: [3, 4, 5, 6, 7]
+                                            }
+                                        },
+                                        {
+                                            extend: 'excel',
+                                            text: feather.icons['file'].toSvg({
+                                                class: 'font-small-4 me-50'
+                                            }) + 'Excel',
+                                            className: 'dropdown-item',
+                                            exportOptions: {
+                                                columns: [3, 4, 5, 6, 7]
+                                            }
+                                        },
+                                        {
+                                            extend: 'pdf',
+                                            text: feather.icons['clipboard'].toSvg({
+                                                class: 'font-small-4 me-50'
+                                            }) + 'Pdf',
+                                            className: 'dropdown-item',
+                                            exportOptions: {
+                                                columns: [3, 4, 5, 6, 7]
+                                            }
+                                        },
+                                        {
+                                            extend: 'copy',
+                                            text: feather.icons['copy'].toSvg({
+                                                class: 'font-small-4 me-50'
+                                            }) + 'Copy',
+                                            className: 'dropdown-item',
+                                            exportOptions: {
+                                                columns: [3, 4, 5, 6, 7]
+                                            }
+                                        }
+                                    ],
+
+                                },
+
+                            ],
+
+                            language: {
+                                paginate: {
+                                    // remove previous & next text from pagination
+                                    previous: '&nbsp;',
+                                    next: '&nbsp;'
+                                }
+                            }
+                        });
+
+                    }
                 }
             },
             plotOptions: {
@@ -139,15 +305,14 @@
         // ----------------------------------
         $('#category').on('change', function() {
 
-            var $category = document.querySelector('#category');
-
+            var $category = $('#category').val();
             var routeName = "{{ route('charts.topics.category') }}";
             $.ajax({
                 url: routeName,
                 type: "GET",
                 dataType: "json",
                 data: {
-                    "filter[category]": `${$category.value}`
+                    "filter[category]": `${$category}`
 
                 },
                 success: function(data) {

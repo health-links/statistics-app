@@ -120,14 +120,14 @@ class CommentApiService
         $comment = $this->getCommentApi()->findOrFail(request()->id);
         $comment->flagged = !$comment->flagged;
         $comment->save();
-        return response()->json(["status"=>'success','message'=>'Comment flagged successfully']);
+        return response()->json(["status" => 'success', 'message' => 'Comment flagged successfully']);
     }
     public function updateBookmark()
     {
         $comment = $this->getCommentApi()->findOrFail(request()->id);
         $comment->bookmarked = !$comment->bookmarked;
         $comment->save();
-        return response()->json(["status" => 'success','message'=>'Bookmark updated']);
+        return response()->json(["status" => 'success', 'message' => 'Bookmark updated']);
     }
 
 
@@ -176,21 +176,65 @@ class CommentApiService
     public function getCommentsTrend()
     {
 
-        if(request()->period == 'monthly'){
+        if (request()->period == 'monthly') {
             $monthNumber = Carbon::parse(request()->date)->format('m');
             $month = strrpos($monthNumber, 0) == 0  ? substr($monthNumber, 1) : $monthNumber;
             $year = Carbon::parse(request()->date)->format('Y');
             $comments = $this->getCommentApi()->where('sn_month', $month)->where('sn_year', $year)->where('r_rate', request()->type)->get();
-
-        }elseif(request()->period == 'quarterly'){
-            $quarter = substr(strtok(request()->date, '-'),1);
-            $year = '20' . substr(request()->date, strpos(request()->date, "_") +3);
+        } elseif (request()->period == 'quarterly') {
+            $quarter = substr(strtok(request()->date, '-'), 1);
+            $year = '20' . substr(request()->date, strpos(request()->date, "_") + 3);
             $comments = $this->getCommentApi()->where('sn_quarter', $quarter)->where('sn_year', $year)->where('r_rate', request()->type)->get();
-
-        }elseif(request()->period == 'yearly'){
+        } elseif (request()->period == 'yearly') {
             $year = Carbon::parse(request()->date)->format('Y');
             $comments = $this->getCommentApi()->where('sn_year', $year)->where('r_rate', request()->type)->get();
         }
         return ['data' => $comments];
+    }
+    //4-categories statistics
+    public function getCommentsCategory()
+    {
+        $data = $this->getCommentApi()->whereHas('categories', function ($query) {
+            $query->where('c_name', request()->category);
+        })->where('r_rate', request()->type)->get();
+
+        return ['data' => $data];
+    }
+
+    //5-topics statistics
+    public function getCommentsTopic()
+    {
+        $data = $this->getCommentApi()->whereHas('topics', function ($query) {
+            $query->where('t_name', request()->topic)->where('type', request()->type);
+        })->get();
+
+        // $data = DB::table('comments_api')
+        //     ->join('comment_topic', 'comment_topic.comment_id', '=', 'comments_api.sn_id')
+        //     ->join('comments_topics', 'comments_topics.t_id', '=', 'comment_topic.topic_id')
+        //     ->when(request()->filter && array_key_exists('category', request()->filter), function ($q) {
+        //         if (request()->filter['category'] != 'all') {
+        //             $q->join('comment_category as category', 'category.comment_id', '=', 'comments_api.sn_id')
+        //                 ->where('category.category_id', request()->filter['category']);
+        //         }
+        //         $q->join('comment_category', 'comment_category.comment_id', '=', 'comments_api.sn_id');
+        //     })
+        //     ->when(request()->filter && array_key_exists('client_id', request()->filter) && request()->filter['client_id'] !== null, function ($q) {
+
+        //         $q->where('comments_api.sn_client', request()->filter['client_id']);
+        //     })
+        //     ->when(request()->filter && array_key_exists('service_id', request()->filter) && request()->filter['service_id'] !== null, function ($q) {
+        //         $q->where('comments_api.sn_service', request()->filter['service_id']);
+        //     })
+        //     ->select('comment_topic.topic_id', 'comments_topics.t_name', 'comment_topic.type','comments_api.*')
+        //     ->selectRaw("-count(CASE when comment_topic.comment_id = comments_api.sn_id AND comment_topic.type = 'positive' THEN 1 END) AS positive_count")
+        //     ->selectRaw("count(CASE when comment_topic.comment_id = comments_api.sn_id AND comment_topic.type = 'negative' THEN 1 END) AS negative_count")
+        //     ->where('comments_topics.t_name', request()->topic)
+        //     ->where('comment_topic.type', request()->type)
+        //     ->groupBy('comment_topic.topic_id', 'comments_api.sn_id')
+        //     ->toSql();
+
+            // dd($data);
+
+        return ['data' => $data];
     }
 }

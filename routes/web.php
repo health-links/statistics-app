@@ -30,6 +30,9 @@ Route::get('comments', [HomeController::class, 'getComments'])->name('comments.t
 Route::get('comments/types', [HomeController::class, 'getCommentsTypes'])->name('comments.types');
 Route::get('comments/chunks', [HomeController::class, 'getCommentsChunks'])->name('comments.chunks');
 Route::get('comments/trend', [HomeController::class, 'getCommentsTrend'])->name('comments.trend');
+Route::get('comments/category', [HomeController::class, 'getCommentsCategory'])->name('comments.category');
+Route::get('comments/topic', [HomeController::class, 'getCommentsTopic'])->name('comments.topic');
+
 
 Route::post('comments/updateFlag', [CommentApiController::class, 'updateFlag'])->name('comments.updateFlag');
 Route::post('comments/updateBookmark', [CommentApiController::class, 'updateBookmark'])->name('comments.updateBookmark');

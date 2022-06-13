@@ -9,6 +9,13 @@ class ServiceFilter implements Filter
 {
     public function __invoke(Builder $query, $value, string $property)
     {
-        return $query->where('sn_service', '=', $value);
+
+        if ($value !== 'all') {
+            return $query->where('sn_service', $value);
+        }
+        return $query;
+
     }
+
+
 }
