@@ -218,9 +218,9 @@
 
                      if (data.status == 'success') {
                          toastr.success(data.message);
-                         $('#comment_table').DataTable().ajax.reload();
                          $('#bookmark-' + id).removeClass('d-none');
                          $('#bookspinner-' + id).addClass('d-none');
+                         $('#comment_table').DataTable().ajax.reload();
 
                      } else {
                          toastr.error(data.message);
@@ -251,9 +251,9 @@
                  success: function(data) {
                      if (data.status == 'success') {
                          toastr.success(data.message);
-                         $('#comment_table').DataTable().ajax.reload();
                          $('#flag-' + id).removeClass('d-none');
                          $('#flagspinner-' + id).addClass('d-none');
+                         $('#comment_table').DataTable().ajax.reload();
 
                      } else {
                          toastr.error(data.message);
