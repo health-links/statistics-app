@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\CommentApiService;
 use App\Http\Controllers\HelperController;
@@ -11,10 +12,11 @@ use App\Http\Services\CommentCategoryService;
 class HomeController extends Controller
 {
     private $topicService, $commentService, $commentCategoryService;
-    public function __construct(CommentTopicService $topicService,
-    CommentApiService $commentService,
-    CommentCategoryService $commentCategoryService)
-    {
+    public function __construct(
+        CommentTopicService $topicService,
+        CommentApiService $commentService,
+        CommentCategoryService $commentCategoryService
+    ) {
         $this->topicService = $topicService;
         $this->commentService = $commentService;
         $this->commentCategoryService = $commentCategoryService;
@@ -46,6 +48,7 @@ class HomeController extends Controller
 
         // heatmap Data
         $heatmapData = $this->getHeatMapData();
+
         // data for filters
         $colors = HelperController::getColors();
         $clients = DB::table('clients')->select('c_id', 'c_acronym')->get();
@@ -108,15 +111,25 @@ class HomeController extends Controller
     {
         $categories = $this->commentCategoryService->getHeatMapData();
         $date = [];
-        $categories = $categories->map(function ($category) use (&$date) {
-            if (array_key_exists($category->category_name, $date)) {
-                $date[$category->category_name][$category->topic_name] = $category->count;
-            } else {
-                $date[$category->category_name] = [$category->topic_name => $category->count];
-            }
+        $categoriesTopics = $categories->pluck('topic_name')->unique();
+        $categoriesTopics->map(function ($topic) use (&$date, $categories) {
+            $categories->map(function ($category) use (&$date, $topic) {
+                if (array_key_exists($category->category_name, $date)) {
+                    if ($category->topic_name == $topic) {
+                        $date[$category->category_name][$topic] = $category->count;
+                    } elseif (!array_key_exists($topic, $date[$category->category_name])) {
+                        $date[$category->category_name][$topic] = 0;
+                    }
+                } else {
+                    if ($category->topic_name == $topic) {
+                        $date[$category->category_name] = [$topic => $category->count];
+                    } else {
+                        $date[$category->category_name] = [$topic => 0];
+                    }
+                }
+            });
             return $date;
         });
-
         return $date;
     }
 
@@ -151,4 +164,8 @@ class HomeController extends Controller
         return $this->topicService->getCommentsTopic();
     }
 
+    public function getHeatMapComments()
+    {
+        return $this->commentCategoryService->getHeatMapComments();
+    }
 }

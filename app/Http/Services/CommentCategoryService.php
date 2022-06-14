@@ -46,9 +46,28 @@ class CommentCategoryService
             ->join('comment_topic', 'comment_topic.comment_id', '=', 'comment_category.comment_id')
             ->join('comments_topics', 'comments_topics.t_id', '=', 'comment_topic.topic_id')
             ->select('comments_categories.c_name as category_name', 'comment_category.comment_id', 'comments_topics.t_name as topic_name', 'comment_topic.topic_id', DB::raw('count(comment_topic.topic_id) as count'))
+            ->orderBy('comments_categories.c_name', 'ASC')
             ->groupBy('comments_categories.c_name', 'comments_topics.t_name', 'comment_topic.topic_id')
             ->get();
 
+
         return $categories;
     }
+
+    public function getHeatMapComments()
+    {
+        $categories = $this->getCommentCategory()
+            ->join('comment_topic', 'comment_topic.comment_id', '=', 'comment_category.comment_id')
+            ->join('comments_topics', 'comments_topics.t_id', '=', 'comment_topic.topic_id')
+            ->select('comments_categories.c_name as category_name', 'comment_category.comment_id', 'comments_topics.t_name as topic_name', 'comment_topic.topic_id', DB::raw('count(comment_topic.topic_id) as count'),'comments_api.*')
+            ->where('comments_topics.t_name',request()->topic)
+            ->where('comments_categories.c_name', request()->category)
+            ->groupBy('comment_topic.topic_id', 'comment_topic.comment_id', 'comment_category.category_id')
+            ->get();
+
+        return ['data'=> $categories];
+    }
+
+
+
 }
