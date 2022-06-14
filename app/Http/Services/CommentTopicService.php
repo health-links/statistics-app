@@ -9,13 +9,14 @@ use App\Traits\HandleFilterRequest;
 class CommentTopicService
 {
     use HandleFilterRequest;
-    public function getTopicsData()
+
+    private function filterData()
     {
-        $topics = DB::table('comments_topics')
+        $data = DB::table('comments_topics')
             ->join('comment_topic', 'comment_topic.topic_id', '=', 'comments_topics.t_id')
             ->join('comments_api', 'comments_api.sn_id', '=', 'comment_topic.comment_id')
             ->when(request()->filter && array_key_exists('category', request()->filter), function ($q) {
-                if ($this->checkFilterParams('category')) {
+                if (request()->filter['category'] != 'all') {
                     $q->join('comment_category as category', 'category.comment_id', '=', 'comments_api.sn_id')
                         ->where('category.category_id', request()->filter['category']);
                 }
@@ -26,7 +27,13 @@ class CommentTopicService
             })
             ->when($this->checkFilterParams('service_id'), function ($q) {
                 $q->where('comments_api.sn_service', request()->filter['service_id']);
-            })
+            });
+        return $data;
+    }
+
+    public function getTopicsData()
+    {
+        $topics = $this->filterData()
             ->select('comment_topic.topic_id', 'comments_topics.t_name', 'comment_topic.type', 'comments_api.sn_id', 'comments_api.sn_client')
             ->selectRaw("-count(CASE when comment_topic.type = 'positive' THEN 1 END) AS positive_count")
             ->selectRaw("count(CASE when comment_topic.type = 'negative' THEN 1 END) AS negative_count")
@@ -34,5 +41,18 @@ class CommentTopicService
             ->get();
 
         return $topics;
+    }
+
+    public function getCommentsTopic()
+    {
+        $data =
+            $this->filterData()
+            ->select('comment_topic.topic_id', 'comments_topics.t_name', 'comment_topic.type', 'comments_api.*')
+            ->where('comments_topics.t_name', request()->topic)
+            ->where('comment_topic.type', request()->type)
+            ->groupBy('comment_topic.topic_id', 'comments_api.sn_id')
+            ->get();
+
+        return ['data' => $data];
     }
 }
