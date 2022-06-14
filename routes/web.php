@@ -32,6 +32,7 @@ Route::get('comments/chunks', [HomeController::class, 'getCommentsChunks'])->nam
 Route::get('comments/trend', [HomeController::class, 'getCommentsTrend'])->name('comments.trend');
 Route::get('comments/category', [HomeController::class, 'getCommentsCategory'])->name('comments.category');
 Route::get('comments/topic', [HomeController::class, 'getCommentsTopic'])->name('comments.topic');
+Route::get('comments/heatmap', [HomeController::class, 'getHeatMapComments'])->name('comments.heatmap');
 
 
 Route::post('comments/updateFlag', [CommentApiController::class, 'updateFlag'])->name('comments.updateFlag');
