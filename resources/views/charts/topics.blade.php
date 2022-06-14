@@ -304,17 +304,21 @@
         // Category
         // ----------------------------------
         $('#category').on('change', function() {
-
             var $category = $('#category').val();
-            var routeName = "{{ route('charts.topics.category') }}";
+            var query = @json(request()->query());
+            var url = '';
+            if (query.length !== 0) {
+                url = url = "{{ route('charts.topics.category') }}" + "?" +
+                    `filter[client_id]=${filter.client_id}&filter[service_id]=${filter.service_id ??''}&filter[from]=${filter.from??''}&filter[to]=${filter.to??''}&filter[category]=${$category??''}`
+            } else {
+                url = "{{ route('charts.topics.category') }}" + "?" + `filter[category]=${$category??''}`;
+            }
+
+
             $.ajax({
-                url: routeName,
+                url: url,
                 type: "GET",
                 dataType: "json",
-                data: {
-                    "filter[category]": `${$category}`
-
-                },
                 success: function(data) {
 
                     let names = [];
