@@ -148,7 +148,7 @@ class HomeController extends Controller
     }
     public function getCommentsTopic()
     {
-        return $this->commentService->getCommentsTopic();
+        return $this->topicService->getCommentsTopic();
     }
 
 }

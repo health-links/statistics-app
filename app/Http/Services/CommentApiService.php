@@ -5,11 +5,13 @@ namespace App\Http\Services;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
+use App\Traits\HandleFilterRequest;
 use App\Http\Controllers\HelperController;
 use App\Http\Filters\CommentApi\CommentApiFilter;
 
 class CommentApiService
 {
+    use HandleFilterRequest;
     private function getCommentApi()
     {
         return (new CommentApiFilter());
@@ -200,13 +202,6 @@ class CommentApiService
         return ['data' => $data];
     }
 
-    //5-topics statistics
-    public function getCommentsTopic()
-    {
-        $data = $this->getCommentApi()->whereHas('topics', function ($query) {
-            $query->where('t_name', request()->topic)->where('type', request()->type);
-        })->get();
 
-        return ['data' => $data];
-    }
+
 }
