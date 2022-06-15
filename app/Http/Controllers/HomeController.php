@@ -45,8 +45,7 @@ class HomeController extends Controller
         $topics = $topicsData['topics'];
         $topicPositive = $topicsData['topicPositive'];
         $topicNegative = $topicsData['topicNegative'];
-        $topNegative = $this->topicService->getTopNegativeTopic();
-        $topPositive = $this->topicService->getTopPositiveTopic();
+        $topTopics = $topicsData['topics']->take(10);
 
         // heatmap Data
         $heatmapData = $this->getHeatMapData();
@@ -55,7 +54,7 @@ class HomeController extends Controller
         $colors = HelperController::getColors();
         $clients = DB::table('clients')->select('c_id', 'c_acronym')->get();
         $services = DB::table('services')->select('s_id', 's_name')->get();
-        return view('home', compact('overAllComments', 'chunksCount', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'colors', 'clients', 'services', 'categoryChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories', 'heatmapData', 'topNegative', 'topPositive'));
+        return view('home', compact('overAllComments', 'chunksCount', 'negativeChunks', 'positiveChunks', 'neutralChunks', 'colors', 'clients', 'services', 'categoryChartData', 'trendChartData', 'topics', 'topicPositive', 'topicNegative', 'categories', 'heatmapData','topTopics'));
     }
 
     public function getDataYearly()
