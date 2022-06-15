@@ -39,3 +39,31 @@ Route::post('comments/updateFlag', [CommentApiController::class, 'updateFlag'])-
 Route::post('comments/updateBookmark', [CommentApiController::class, 'updateBookmark'])->name('comments.updateBookmark');
 
 
+Route::get('/insert', function () {
+    $types = ['positive', 'negative', 'neutral'];
+
+    $dates = [ '2021-12-05', '2021-12-12', '2021-12-15', '2021-12-20', '2021-12-25', '2021-12-30' ];
+
+    $arr = [];
+    for ($i = 0; $i < 2000; $i++) {
+        $arr[] = [
+            'sn_client' => 1,
+            'sn_service' => 'as',
+            'sn_survey_code' => 'test',
+            'sn_comment_field' => 'test',
+            'sn_rate' => 'test',
+            'sn_domain' => 'test',
+            'sn_comment' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book',
+            'sn_amenddate' => $dates[rand(0, 5)],
+            'sn_created' => now(),
+            'sn_month' =>12,
+            'sn_quarter' =>4,
+            'sn_year' => 2021,
+            'r_response' => '',
+            'r_rate' => 'neutral',
+            'r_cats' => ''
+        ];
+    }
+
+    DB::table('comments_api')->insert($arr);
+});

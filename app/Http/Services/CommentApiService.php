@@ -20,6 +20,8 @@ class CommentApiService
     {
         $data = $this->getCommentApi()
             ->with(['topics', 'categories', 'client'])
+            ->whereHas('topics')
+            ->whereHas('categories')
             ->latest('sn_amenddate')
             ->paginate(100);
         $tableData = [];
@@ -74,7 +76,7 @@ class CommentApiService
         $commentsMonthly = $this->getCommentApi()->whereBetween('sn_amenddate', [$start_date, $end_date])
             ->select(DB::raw('sn_year as year'), DB::raw('sn_month as month'), 'r_rate', DB::raw('count(*) as count'))
             ->where('r_rate', '!=', 'mixed')
-            ->orderBy('month', 'asc')
+            ->orderBy('count', 'desc')
             ->groupBy('year', 'month', 'r_rate')
             ->get();
         $trendChartData = HelperController::trendHandelArr('monthly', $period, $commentsMonthly);
