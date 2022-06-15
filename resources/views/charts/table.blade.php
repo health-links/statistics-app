@@ -9,8 +9,7 @@
                              <th>Comment</th>
                              <th>Insights</th>
                              <th>Categories</th>
-                             <th>Bookmark Icon</th>
-                             <th>Flag Icon</th>
+                             <th>Actions</th>
                          </tr>
                      </thead>
                  </table>
@@ -34,6 +33,7 @@
 
          var comment_table = $('#comment_table')
          var table = comment_table.DataTable({
+
              "ajax": {
                  "url": url,
                  "type": "GET"
@@ -50,9 +50,7 @@
                  {
                      data: ''
                  },
-                 {
-                     data: ''
-                 },
+
              ],
              columnDefs: [{
                      targets: [1],
@@ -67,57 +65,49 @@
                      },
                  },
                  {
-                     targets: [-2],
-                     title: 'Bookmark Icon',
+                     targets: [-1],
                      render: function(data, type, row, meta) {
-                         var html = '';
+                         var html1 = '';
                          if (row.bookmark == 0) {
-                             html = "<a  href='javascript:void(0)' id='bookmark-" + row.id +
+                             html1 = "<a  href='javascript:void(0)' class='ml-2' id='bookmark-" + row.id +
                                  "'onClick='updateBookmark(" + row.id +
-                                 ")'>" + "<i class='fa-regular fa-bookmark'></i>" + "</a>" +
+                                 ")'>" + "<img src='{{ asset('admin/app-assets/images/bookmark-1.png') }}' style='width: 20px;height: 20px;'>" + "</a>" +
                                  "<span class='spinner-border text-secondary d-none'  role='status'  id='bookspinner-" +
                                  row.id +
                                  "'>" + "</span>";
 
                          } else {
-                             html = "<a  href='javascript:void(0)' disabled id='bookmark-" + row.id +
+                             html1 = "<a  href='javascript:void(0)' id='bookmark-" + row.id +
                                  "'onClick='updateBookmark(" + row.id +
-                                 ")'><i class='fa-solid fa-bookmark'></i></a>" +
+                                 ")'><img src='{{ asset('admin/app-assets/images/bookmark-2.png') }}' style='width: 20px;height: 20px;'></a>" +
                                  "<span class='spinner-border text-secondary d-none'  role='status'  id='bookspinner-" +
                                  row.id +
                                  "'>" + "</span>";
 
                          }
-                         return html;
-                     },
-                 },
-                 {
-                     targets: [-1],
-                     render: function(data, type, row, meta) {
-
                          var html = '';
                          if (row.flag == 0) {
                              html = "<a  href='javascript:void(0)' id='flag-" + row.id +
                                  "'onClick='updateFlag(" + row.id +
-                                 ")'>" + "<i class='fa-regular fa-flag'></i>" + "</a>" +
+                                 ")'>" + "<img src='{{ asset('admin/app-assets/images/question-red.webp') }}' style='width: 20px;height: 20px;'>" + "</a>" +
                                  "<span class='spinner-border text-secondary d-none'  role='status'  id='flagspinner-" +
                                  row.id +
                                  "'>" + "</span>";
                          } else {
-                             html = "<a  href='javascript:void(0)' disabled id='flag-" + row.id +
+                             html = "<a  href='javascript:void(0)'  id='flag-" + row.id +
                                  "'onClick='updateFlag(" + row.id +
-                                 ")'><i class='fa-solid fa-flag'></i></a>" +
+                                 ")'><img src='{{ asset('admin/app-assets/images/question-1.png') }}' style='width: 20px;height: 20px;'></a>" +
                                  "<span class='spinner-border text-secondary d-none'  role='status'  id='flagspinner-" +
                                  row.id +
                                  "'>" + "</span>";
                          }
-                         return html;
+                         return html1 + ' &nbsp ' + html;
                      },
                  }
              ],
              dom: '<"card-header border-bottom p-1"<"head-label"><"dt-action-buttons text-end"B>><"d-flex justify-content-between align-items-center mx-0 row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>t<"d-flex justify-content-between mx-0 row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-             displayLength: 10,
-             lengthMenu: [10, 15, 25, 50, 75, 100],
+             displayLength: 15,
+             lengthMenu: [15, 25, 50, 75, 100],
              buttons: [{
                      extend: 'collection',
                      className: 'btn btn-outline-secondary dropdown-toggle me-2',

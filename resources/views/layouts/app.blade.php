@@ -3,7 +3,7 @@
 
 @include('layouts._head')
 
-<body class="vertical-layout vertical-menu-modern  navbar-floating footer-static " data-open="click"
+<body class="pace-done vertical-layout vertical-menu-modern navbar-floating footer-static menu-collapsed " data-open="click"
     data-menu="vertical-menu-modern" data-col="">
     <!-- BEGIN: Header-->
     @include('layouts._header')

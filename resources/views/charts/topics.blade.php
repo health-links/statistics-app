@@ -96,6 +96,7 @@
                 height: 330,
                 stacked: true,
                 type: 'bar',
+
                 toolbar: {
                     show: false
                 },
@@ -229,10 +230,10 @@
                     }
                 }
             },
+
             plotOptions: {
                 bar: {
-                    columnWidth: '20%',
-                    endingShape: 'rounded'
+                    columnWidth: '40%'
                 },
                 distributed: true
             },
@@ -260,6 +261,11 @@
                 padding: {
                     top: -20,
                     bottom: -10
+                },
+                xaxis: {
+                    lines: {
+                        show: true
+                    }
                 },
                 yaxis: {
                     lines: {
@@ -289,13 +295,17 @@
             yaxis: {
                 labels: {
                     style: {
-
                         fontSize: '0.86rem'
                     },
                     formatter: function(val) {
                         return new Intl.NumberFormat().format(parseInt(Math.abs(val)));
                     }
                 }
+            },
+            fill:{
+                type:'solid',
+                colors: [$positiveChunks,$negativeChunks],
+                opacity: 0.2
             }
         };
         revenueReportChart = new ApexCharts($revenueReportChart, revenueReportChartOptions);

@@ -1,6 +1,6 @@
 
     <nav
-        class="header-navbar navbar navbar-expand-lg align-items-center floating-nav navbar-light navbar-shadow container-xxl">
+        class="header-navbar navbar navbar-expand-lg align-items-center navbar-light navbar-shadow fixed-top">
         <div class="navbar-container d-flex content">
             <div class="bookmark-wrapper d-flex align-items-center">
                 <ul class="nav navbar-nav d-xl-none">
@@ -34,7 +34,7 @@
                 </ul>
             </div>
             <ul class="nav navbar-nav align-items-center ms-auto">
-            
+
                 <li class="nav-item d-none d-lg-block"><a class="nav-link nav-link-style"><i class="ficon"
                             data-feather="moon"></i></a></li>
                 <li class="nav-item nav-search"><a class="nav-link nav-link-search"><i class="ficon"
