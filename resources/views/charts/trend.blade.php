@@ -82,6 +82,7 @@
                     height: 300,
                     type: 'area',
                     parentHeightOffset: 0,
+                      stacked: true,
                     toolbar: {
                         show: false
                     },
@@ -113,8 +114,7 @@
                                         period: $period
                                     }
                                 },
-                                columns: [
-                                    {
+                                columns: [{
                                         data: 'sn_comment'
                                     },
                                     {
@@ -212,14 +212,21 @@
                 dataLabels: {
                     enabled: false
                 },
-                stroke: {
+               stroke: {
                     show: false,
                     curve: 'straight'
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        opacityFrom: 0.8,
+                        opacityTo: 1,
+                    }
                 },
                 legend: {
                     show: true,
                     position: 'top',
-                    horizontalAlign: 'start'
+                    horizontalAlign: 'left'
                 },
                 grid: {
                     xaxis: {
@@ -230,7 +237,6 @@
                 },
                 colors: [
                     @foreach ($trendChartData as $key => $value)
-
                         `{{ $trendChartData[$key]['color'] }}`,
                     @endforeach
                 ],
@@ -250,10 +256,7 @@
                         ...(@json($trendChartData['positive']['categories']))
                     ]
                 },
-                fill: {
-                    opacity: 1,
-                    type: 'solid'
-                },
+
                 tooltip: {
                     shared: false
                 },

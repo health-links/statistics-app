@@ -1,6 +1,7 @@
 <div class="customizer d-none d-md-block"><a
-            class="customizer-toggle d-flex align-items-center justify-content-center" href="#"><i
-                class="spinner" data-feather="settings"></i></a>
+            class="customizer-toggle d-flex align-items-center justify-content-center" href="#">
+
+            <i class="fas fa-filter"></i></a>
         <div class="customizer-content">
             <!-- Customizer header -->
             <div class="customizer-header px-2 pt-1 pb-0 position-relative">
@@ -91,11 +92,11 @@
                 <p class="navbar-type-text fw-bold">Navbar Type</p>
                 <div class="d-flex">
                     <div class="form-check me-1">
-                        <input type="radio" id="nav-type-floating" name="navType" class="form-check-input" checked />
+                        <input type="radio" id="nav-type-floating" name="navType" class="form-check-input"  />
                         <label class="form-check-label" for="nav-type-floating">Floating</label>
                     </div>
                     <div class="form-check me-1">
-                        <input type="radio" id="nav-type-sticky" name="navType" class="form-check-input" />
+                        <input type="radio" id="nav-type-sticky" name="navType" class="form-check-input" checked/>
                         <label class="form-check-label" for="nav-type-sticky">Sticky</label>
                     </div>
                     <div class="form-check me-1">

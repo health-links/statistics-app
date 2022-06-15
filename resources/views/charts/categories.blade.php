@@ -75,6 +75,7 @@
                 toolbar: {
                     show: false
                 },
+
                 events: {
                     dataPointSelection: (event, chartContext, config) => {
                         var type = chartContext.w.config.series[config.seriesIndex].name;
@@ -199,13 +200,25 @@
             plotOptions: {
                 bar: {
                     horizontal: true,
-                    barHeight: '60%',
+                    barHeight: '90%',
 
                 },
             },
             colors: [$positiveChunks, $negativeChunks, $neutralChunks],
             dataLabels: {
                 enabled: false
+            },
+             grid: {
+                xaxis: {
+                    lines: {
+                        show: true
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
             },
             stroke: {
                 width: 1,
@@ -232,12 +245,12 @@
                 }
             },
             fill: {
-                opacity: 1
+                opacity: .3
             },
             legend: {
                 position: 'top',
                 horizontalAlign: 'left',
-                offsetX: 40
+                offsetX: 30
             }
         };
 
