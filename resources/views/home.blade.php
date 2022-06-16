@@ -92,12 +92,11 @@
                     </div>
                     <div class="row match-height">
                         <!-- Statistics Card -->
-
                             <div class="col-lg-6 col-12">
                                 @include('charts.topPostiveTopic')
                             </div>
                             <div class="col-lg-6 col-12">
-                                {{--  @include('charts.topNegativeTopic')  --}}
+                                @include('charts.topNegativeTopic')
                             </div>
 
                         <!--/ Statistics Card -->

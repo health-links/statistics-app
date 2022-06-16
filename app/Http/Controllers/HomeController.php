@@ -45,8 +45,9 @@ class HomeController extends Controller
         $topics = $topicsData['topics'];
         $topicPositive = $topicsData['topicPositive'];
         $topicNegative = $topicsData['topicNegative'];
-        $topTopics = $topicsData['topics']->take(10);
 
+        $topTopics = $this->topicService->getTopTopics();
+        // dd($topTopics);
         // heatmap Data
         $heatmapData = $this->getHeatMapData();
 
@@ -80,6 +81,7 @@ class HomeController extends Controller
         $topics = $this->topicService->getTopicsData();
         $topicPositive = $topics->pluck('positive_count')->toArray();
         $topicNegative = $topics->pluck('negative_count')->toArray();
+
         return [
             'topics' => $topics,
             'topicPositive' => $topicPositive,

@@ -37,11 +37,8 @@ class CommentTopicService
             ->select('comment_topic.topic_id', 'comments_topics.t_name', 'comment_topic.type', 'comments_api.sn_id', 'comments_api.sn_client')
             ->selectRaw("-count(CASE when comment_topic.type = 'positive' THEN 1 END) AS positive_count")
             ->selectRaw("count(CASE when comment_topic.type = 'negative' THEN 1 END) AS negative_count")
-            ->orderBy('negative_count', 'desc')
             ->groupBy('comment_topic.topic_id', 'comments_topics.t_name')
-
             ->get();
-
         return $topics;
     }
 
@@ -57,6 +54,30 @@ class CommentTopicService
 
         return ['data' => $data];
     }
+
+
+    public function getTopTopics()
+    {
+        $topPositiveTopics = $this->filterData()
+            ->select('comment_topic.topic_id', 'comments_topics.t_name', 'comment_topic.type', 'comments_api.sn_id', 'comments_api.sn_client')
+            ->selectRaw("count(CASE when comment_topic.type = 'positive' THEN 1 END) AS positive_count")
+            ->orderBy('positive_count', 'desc')
+            ->groupBy('comment_topic.topic_id', 'comments_topics.t_name',)
+            ->take(10)
+            ->get();
+
+        $topNegativeTopics = $this->filterData()
+            ->select('comment_topic.topic_id', 'comments_topics.t_name', 'comment_topic.type', 'comments_api.sn_id', 'comments_api.sn_client')
+            ->selectRaw("count(CASE when comment_topic.type = 'negative' THEN 1 END) AS negative_count")
+            ->orderBy('negative_count', 'desc')
+            ->groupBy('comment_topic.topic_id', 'comments_topics.t_name',)
+            ->take(10)
+            ->get();
+
+        return ['topPositiveTopics'=> $topPositiveTopics, 'topNegativeTopics'=> $topNegativeTopics];
+
+    }
+
 
 
 

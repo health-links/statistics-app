@@ -193,65 +193,67 @@
                             enableShades: false,
                             useFillColorAsStroke: true,
                             colorScale: {
-                                ranges: [{
+                                ranges: [
+
+                                    {
                                         from: 0,
                                         to: 10.0,
                                         name: '',
-                                        color: '#fbfcfe'
+                                        color: 'rgba(251, 166, 24, 0.1)'
                                     },
                                     {
                                         from: 10.1,
                                         to: 20.0,
                                         name: '',
-                                        color: '#fbf2e4'
+                                        color: 'rgba(251, 166, 24, 0.2)'
                                     },
                                     {
                                         from: 20.1,
                                         to: 30.0,
                                         name: '',
-                                        color: '#fbe9cb'
+                                        color: 'rgba(251, 166, 24, 0.3)'
                                     },
                                     {
                                         from: 30.1,
                                         to: 40.0,
                                         name: '',
-                                        color: '#fbdfb1'
+                                        color: 'rgba(251, 166, 24, 0.4)'
                                     },
                                     {
                                         from: 40.1,
                                         to: 50.0,
                                         name: '',
-                                        color: '#fbd698'
+                                        color: 'rgba(251, 166, 24, 0.5)'
                                     },
                                     {
                                         from: 50.1,
                                         to: 60.0,
                                         name: '',
-                                        color: '#fbcc7e'
+                                        color: 'rgba(251, 166, 24, 0.6)'
                                     },
                                     {
                                         from: 60.1,
                                         to: 70.0,
                                         name: '',
-                                        color: '#fbc365'
+                                        color: 'rgba(251, 166, 24, 0.7)'
                                     },
                                     {
                                         from: 70.1,
                                         to: 80.0,
                                         name: '',
-                                        color: '#fbb94b'
+                                        color: 'rgba(251, 166, 24, 0.8)'
                                     },
                                     {
                                         from: 80.1,
                                         to: 90.0,
                                         name: '',
-                                        color: '#fbb032'
+                                        color: 'rgba(251, 166, 24, 0.9)'
                                     },
                                     {
                                         from: 90.1,
                                         to: 100,
                                         name: '',
-                                        color: '#fba618'
+                                        color: 'rgba(251, 166, 24, 1)'
                                     }
                                 ]
                             }
