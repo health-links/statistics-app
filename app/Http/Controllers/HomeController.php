@@ -110,27 +110,52 @@ class HomeController extends Controller
 
     private function getHeatMapData()
     {
-        $categories = $this->commentCategoryService->getHeatMapData();
+        // $categories = $this->commentCategoryService->getHeatMapData();
+        // dd($categories);
+        // $date = [];
+        // $categoriesTopics = $categories->pluck('topic_name')->unique();
+        // $categoriesTopics->map(function ($topic) use (&$date, $categories) {
+        //     $categories->map(function ($category) use (&$date, $topic) {
+        //         if (array_key_exists($category->category_name, $date)) {
+        //             if ($category->topic_name == $topic) {
+        //                 $date[$category->category_name][$topic] = $category->count;
+        //             } elseif (!array_key_exists($topic, $date[$category->category_name])) {
+        //                 $date[$category->category_name][$topic] = 0;
+        //             }
+        //         } else {
+        //             if ($category->topic_name == $topic) {
+        //                 $date[$category->category_name] = [$topic => $category->count];
+        //             } else {
+        //                 $date[$category->category_name] = [$topic => 0];
+        //             }
+        //         }
+        //     });
+        //     return $date;
+        // });
+        $topics = $this->commentCategoryService->getHeatMapData();
         $date = [];
-        $categoriesTopics = $categories->pluck('topic_name')->unique();
-        $categoriesTopics->map(function ($topic) use (&$date, $categories) {
-            $categories->map(function ($category) use (&$date, $topic) {
-                if (array_key_exists($category->category_name, $date)) {
-                    if ($category->topic_name == $topic) {
-                        $date[$category->category_name][$topic] = $category->count;
-                    } elseif (!array_key_exists($topic, $date[$category->category_name])) {
-                        $date[$category->category_name][$topic] = 0;
+        $categoriesTopics = $topics->pluck('category_name')->unique();
+        $categoriesTopics->map(function ($category) use (&$date, $topics) {
+            $topics->map(function ($topic) use (&$date, $category) {
+
+                if (array_key_exists($topic->topic_name, $date)) {
+                    if ($topic->category_name == $category) {
+                        $date[$topic->topic_name][$category] = $topic->count;
+                    } elseif (!array_key_exists($category, $date[$topic->topic_name])) {
+                        $date[$topic->topic_name][$category] = 0;
                     }
                 } else {
-                    if ($category->topic_name == $topic) {
-                        $date[$category->category_name] = [$topic => $category->count];
+                    if ($topic->category_name == $category) {
+                        $date[$topic->topic_name] = [$category => $topic->count];
                     } else {
-                        $date[$category->category_name] = [$topic => 0];
+                        $date[$topic->topic_name] = [$category => 0];
                     }
                 }
             });
             return $date;
         });
+
+
         return $date;
     }
 
