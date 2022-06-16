@@ -39,7 +39,6 @@ class CommentTopicService
             ->selectRaw("count(CASE when comment_topic.type = 'negative' THEN 1 END) AS negative_count")
             ->groupBy('comment_topic.topic_id', 'comments_topics.t_name')
             ->get();
-
         return $topics;
     }
 
@@ -56,33 +55,32 @@ class CommentTopicService
         return ['data' => $data];
     }
 
-    public function getTopNegativeTopic()
+
+    public function getTopTopics()
     {
-        $data =
-            $this->filterData()
-            ->select('comment_topic.topic_id', 'comments_topics.t_name', 'comment_topic.type', 'comments_api.sn_id', 'comments_api.sn_client')
-            ->selectRaw("count(CASE when comment_topic.type = 'negative' THEN 1 END) AS negative_count")
-            ->groupBy('comment_topic.topic_id', 'comments_topics.t_name')
-            ->orderBy('negative_count', 'desc')
-            ->limit(10)
-            ->get();
-
-
-        return  $data;
-    }
-
-
-    public function getTopPositiveTopic()
-    {
-        $data =
-            $this->filterData()
+        $topPositiveTopics = $this->filterData()
             ->select('comment_topic.topic_id', 'comments_topics.t_name', 'comment_topic.type', 'comments_api.sn_id', 'comments_api.sn_client')
             ->selectRaw("count(CASE when comment_topic.type = 'positive' THEN 1 END) AS positive_count")
-            ->groupBy('comment_topic.topic_id', 'comments_topics.t_name')
             ->orderBy('positive_count', 'desc')
-            ->limit(10)
+            ->groupBy('comment_topic.topic_id', 'comments_topics.t_name',)
+            ->take(10)
             ->get();
 
-        return  $data;
+        $topNegativeTopics = $this->filterData()
+            ->select('comment_topic.topic_id', 'comments_topics.t_name', 'comment_topic.type', 'comments_api.sn_id', 'comments_api.sn_client')
+            ->selectRaw("count(CASE when comment_topic.type = 'negative' THEN 1 END) AS negative_count")
+            ->orderBy('negative_count', 'desc')
+            ->groupBy('comment_topic.topic_id', 'comments_topics.t_name',)
+            ->take(10)
+            ->get();
+
+        return ['topPositiveTopics'=> $topPositiveTopics, 'topNegativeTopics'=> $topNegativeTopics];
+
     }
+
+
+
+
+
+
 }
