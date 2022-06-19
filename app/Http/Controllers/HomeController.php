@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
-use App\Http\Services\CommentApiService;
+use App\Services\CommentApiService;
 use App\Http\Controllers\HelperController;
-use App\Http\Services\CommentTopicService;
-use App\Http\Services\CommentCategoryService;
+use App\Services\CommentTopicService;
+use App\Services\CommentCategoryService;
 
 
 class HomeController extends Controller

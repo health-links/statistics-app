@@ -50,6 +50,6 @@
         href="{{ asset('admin') }}/app-assets/css/plugins/charts/chart-apex.min.css">
     <link rel="stylesheet" type="text/css"
         href="{{ asset('admin') }}/app-assets/css/plugins/extensions/ext-component-toastr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    {{--  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">  --}}
     <link rel="stylesheet" type="text/css" href="{{ asset('admin') }}/assets/css/style.css">
 </head>
