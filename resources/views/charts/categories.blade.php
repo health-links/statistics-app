@@ -200,7 +200,7 @@
             plotOptions: {
                 bar: {
                     horizontal: true,
-                    barHeight: '90%',
+                    barHeight: '50%',
 
                 },
             },
