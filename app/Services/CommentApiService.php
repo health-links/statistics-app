@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Services;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -143,7 +143,7 @@ class CommentApiService
             ->where('r_rate', request()->type)
             ->with(['topics', 'categories', 'client'])
             ->latest('sn_amenddate')
-            ->get();
+            ->paginate(1000);
         $tableData = [];
         $data->map(function ($item, $key) use (&$tableData) {
             $tableData[$key] = [
@@ -203,7 +203,4 @@ class CommentApiService
         })->get();
         return ['data' => $data];
     }
-
-
-
 }
