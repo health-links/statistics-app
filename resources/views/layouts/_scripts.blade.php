@@ -19,6 +19,6 @@
 <script src="{{ asset('admin') }}/app-assets/js/core/app-menu.min.js"></script>
 <script src="{{ asset('admin') }}/app-assets/js/core/app.min.js"></script>
 <script src="{{ asset('admin') }}/app-assets/js/scripts/customizer.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{{--  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>  --}}
 
 <script src="{{ asset('admin') }}/app-assets/js/scripts/tables/table-datatables-basic.js"></script>

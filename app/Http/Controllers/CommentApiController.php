@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Services\CommentApiService;
+use App\Services\CommentApiService;
 use Illuminate\Http\Request;
 
 class CommentApiController extends Controller

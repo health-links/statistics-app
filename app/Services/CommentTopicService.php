@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 use App\Traits\HandleFilterRequest;
@@ -9,7 +9,6 @@ use App\Traits\HandleFilterRequest;
 class CommentTopicService
 {
     use HandleFilterRequest;
-
     private function filterData()
     {
         $data = DB::table('comments_topics')
@@ -39,6 +38,7 @@ class CommentTopicService
             ->selectRaw("count(CASE when comment_topic.type = 'negative' THEN 1 END) AS negative_count")
             ->groupBy('comment_topic.topic_id', 'comments_topics.t_name')
             ->get();
+
         return $topics;
     }
 
@@ -63,7 +63,7 @@ class CommentTopicService
             ->selectRaw("count(CASE when comment_topic.type = 'positive' THEN 1 END) AS positive_count")
             ->orderBy('positive_count', 'desc')
             ->groupBy('comment_topic.topic_id', 'comments_topics.t_name',)
-            ->take(10)
+            ->limit(10)
             ->get();
 
         $topNegativeTopics = $this->filterData()
@@ -71,16 +71,9 @@ class CommentTopicService
             ->selectRaw("count(CASE when comment_topic.type = 'negative' THEN 1 END) AS negative_count")
             ->orderBy('negative_count', 'desc')
             ->groupBy('comment_topic.topic_id', 'comments_topics.t_name',)
-            ->take(10)
+            ->limit(10)
             ->get();
 
-        return ['topPositiveTopics'=> $topPositiveTopics, 'topNegativeTopics'=> $topNegativeTopics];
-
+        return ['topPositiveTopics' => $topPositiveTopics, 'topNegativeTopics' => $topNegativeTopics];
     }
-
-
-
-
-
-
 }
