@@ -99,15 +99,19 @@
                         <div class="col-negative negative-4"> <p>{{ $negativeData[3]->t_name }} {{ $negativeData[3]->negative_count }}</p></div>
                     </div>
                     <div class="col-negative-2 flex">
-                        <div class="col-negative negative-5"> <p>{{ $negativeData[4]->t_name }} {{ $negativeData[4]->negative_count }}</p></div>
-                        <div class="col-negative negative-6"> <p>{{ $negativeData[5]->t_name }} {{ $negativeData[5]->negative_count }}</p></div>
+                        <div class="col-negative negative-3"> <p>{{ $negativeData[2]->t_name }} {{ $negativeData[4]->negative_count }}</p></div>
+                        <div class="col-negative negative-4"> <p>{{ $negativeData[3]->t_name }} {{ $negativeData[5]->negative_count }}</p></div>
+                    </div>
+                    <div class="col-negative-2 flex">
+                        <div class="col-negative negative-5"> <p>{{ $negativeData[4]->t_name }} {{ $negativeData[6]->negative_count }}</p></div>
+                        <div class="col-negative negative-6"> <p>{{ $negativeData[5]->t_name }} {{ $negativeData[7]->negative_count }}</p></div>
                         <div class="col-negative flex-column">
                             <div class="col-negative-2 flex">
-                                <div class="col-negative negative-7"> <p>{{ $negativeData[6]->t_name }} {{ $negativeData[6]->negative_count }}</p></div>
+                                <div class="col-negative negative-7"> <p>{{ $negativeData[6]->t_name }} {{ $negativeData[8]->negative_count }}</p></div>
 
                             </div>
                             <div class="col-negative-2 flex">
-                                <div class="col-negative negative-8"> <p>{{ $negativeData[7]->t_name }} {{ $negativeData[7]->negative_count }}</p></div>
+                                <div class="col-negative negative-8"> <p>{{ $negativeData[7]->t_name }} {{ $negativeData[9]->negative_count }}</p></div>
 
                             </div>
                         </div>
