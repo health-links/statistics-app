@@ -1,7 +1,7 @@
 @push('css')
     <style>
         .view {
-            height: 300px;
+            height: 354px!important;
         }
 
         .flex {
@@ -20,9 +20,11 @@
         }
 
         .col-negative p {
-            color: #fff;
-            padding: 2px;
-            align-self: end;
+    min-width: 87px;
+    color: #fff;
+    padding: 4px 5px;
+    align-self: end;
+    font-size: 11px;
         }
 
         .col-negative-2 {
@@ -74,16 +76,16 @@
 
 
 <div class="col-xl-12 col-md-6 col-12">
-    <div class="card card-statistics">
+    <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Key Strengths</h4>
+            <h6 >Key Strengths</h6>
 
         </div>
         @php
 
             $negativeData = $topTopics['topNegativeTopics'];
         @endphp
-        <div class="card-body statistics-body">
+        <div class="card-body ">
             <div class="flex view">
                 <div class="col-negative flex-column">
                     <div class="col-negative-2 flex">
